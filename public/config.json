@@ -1,0 +1,40 @@
+{
+  "common": {
+    "language": "de"
+  },
+  "calendar": {
+    "header": "Termine",
+    "fade": true,
+    "fadePoint": 0.25,
+    "maximumEntries": 15,
+    "maximumNumberOfDays": 365,
+    "maxTitleLength": 25,
+    "wrapEvents": true,
+    "updateIntervall": 3600000,
+    "calendars": [
+      {
+        "url": null,
+        "auth": {
+            "user": "username",
+            "pass": "superstrongpassword"
+        }
+      }
+    ]
+  },
+  "weather": {
+    "appid": "YOUR_OPENWEATHER_API_KEY",
+    "location": "YOUR_LOCATION",
+    "locationID": "YOUR_LOCATION_ID",
+    "updateIntervall": 600000
+  },
+  "weatherForecast": {
+    "header": "Wettervorhersage",
+    "fade": true,
+    "fadePoint": 0.25,
+    "appid": "YOUR_OPENWEATHER_API_KEY",
+    "location": "YOUR_LOCATION",
+    "locationID": "2950YOUR_LOCATION_ID159",
+    "maxNumberOfDays": 7,
+    "updateIntervall": 7200000
+  }
+}
