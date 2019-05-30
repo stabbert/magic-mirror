@@ -74,9 +74,42 @@ function capFirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-let isFullDayEvent = function(event) {
+function isFullDayEvent(event) {
   return event.duration.days > 0 ? true : false;
-};
+}
+
+function calculateTime(now, newEvent) {
+  let time;
+  if (newEvent.fullDayEvent) {
+    if (newEvent.today) {
+      time = "Heute";
+    } else if (
+      newEvent.startDate - now < oneDay &&
+      newEvent.startDate - now > 0
+    ) {
+      time = "Morgen";
+    } else if (
+      newEvent.startDate - now < 2 * oneDay &&
+      newEvent.startDate - now > 0
+    ) {
+      time = "Übermorgen";
+    } else {
+      time = capFirst(moment(newEvent.startDate, "x").fromNow());
+    }
+  } else {
+    if (newEvent.startDate >= now) {
+      if (newEvent.startDate - now < 2 * oneDay) {
+        // Otherwise just say 'Today/Tomorrow at such-n-such time'
+        time = capFirst(moment(newEvent.startDate, "x").calendar());
+      } else {
+        time = capFirst(moment(newEvent.startDate, "x").fromNow());
+      }
+    } else {
+      time = "Noch " + moment(newEvent.endDate, "x").fromNow(true);
+    }
+  }
+  return time;
+}
 
 export default {
   name: "Calendar",
@@ -96,17 +129,22 @@ export default {
     });
 
     function updateCalendar() {
-      let now = new Date();
-      let today = moment()
+      const now = new Date();
+      const today = moment()
         .startOf("day")
         .toDate();
-      let future = moment()
+      const future = moment()
         .startOf("day")
         .add(config.maximumNumberOfDays, "days")
         .subtract(1, "seconds")
         .toDate(); // Subtract 1 second so that events that start on the middle of the night will not repeat.
 
       let calendarFetches = [];
+      let updateTimeInAllEventsIntervalId;
+
+      if (updateTimeInAllEventsIntervalId) {
+        clearInterval(updateTimeInAllEventsIntervalId);
+      }
 
       for (let calendar of config.calendars) {
         let url = calendar.url.replace("webcal://", "http://");
@@ -237,7 +275,7 @@ export default {
                   // Single event.
                   let fullDayEvent = isFullDayEvent(event);
 
-                  if (!fullDayEvent && endDate < new Date()) {
+                  if (!fullDayEvent && endDate < now) {
                     //window.console.log("It's not a fullday event, and it is in the past. So skip: " + title);
                     continue;
                   }
@@ -285,37 +323,6 @@ export default {
         let maximumAllNewEvents = allNewEvents.slice(0, config.maximumEntries);
 
         self.events = maximumAllNewEvents.map((newEvent, index) => {
-          let time;
-
-          if (newEvent.fullDayEvent) {
-            if (newEvent.today) {
-              time = "Heute";
-            } else if (
-              newEvent.startDate - now < oneDay &&
-              newEvent.startDate - now > 0
-            ) {
-              time = "Morgen";
-            } else if (
-              newEvent.startDate - now < 2 * oneDay &&
-              newEvent.startDate - now > 0
-            ) {
-              time = "Übermorgen";
-            } else {
-              time = capFirst(moment(newEvent.startDate, "x").fromNow());
-            }
-          } else {
-            if (newEvent.startDate >= new Date()) {
-              if (newEvent.startDate - now < 2 * oneDay) {
-                // Otherwise just say 'Today/Tomorrow at such-n-such time'
-                time = capFirst(moment(newEvent.startDate, "x").calendar());
-              } else {
-                time = capFirst(moment(newEvent.startDate, "x").fromNow());
-              }
-            } else {
-              time = "Noch " + moment(newEvent.endDate, "x").fromNow(true);
-            }
-          }
-
           let opacity = 1;
 
           if (config.fade && config.fadePoint < 1) {
@@ -336,7 +343,7 @@ export default {
               config.maxTitleLength,
               config.wrapEvents
             ),
-            time: time,
+            time: calculateTime(now, newEvent),
             symbol:
               newEvent.title.indexOf("Geburtstag") === -1
                 ? "fa-calendar-check-o"
@@ -344,6 +351,18 @@ export default {
             opacity: opacity
           };
         });
+
+        function updateTimeInAllEvents() {
+          const now = new Date();
+          maximumAllNewEvents.forEach((newEvent, index) => {
+            self.events[index].time = calculateTime(now, newEvent);
+          });
+        }
+
+        updateTimeInAllEventsIntervalId = setInterval(
+          updateTimeInAllEvents,
+          60000
+        );
       });
     }
 
