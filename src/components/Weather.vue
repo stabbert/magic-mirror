@@ -1,16 +1,16 @@
 <template>
   <div>
     <div class="normal medium">
-        <span class="wi wi-strong-wind dimmed"></span>
-        <span>{{ windSpeed }}</span>
-        <sup>{{ windDirection }}</sup>
-        <span>&nbsp;</span>
-        <span class="wi dimmed" v-bind:class="sunriseSunsetIcon"></span>
-        <span>{{ sunriseSunsetTime }}</span>
+      <span class="wi wi-strong-wind dimmed"></span>
+      <span>{{ windSpeed }}</span>
+      <sup>{{ windDirection }}</sup>
+      <span>&nbsp;</span>
+      <span class="wi dimmed" v-bind:class="sunriseSunsetIcon"></span>
+      <span>{{ sunriseSunsetTime }}</span>
     </div>
     <div class="large light">
-        <span class="wi weathericon" v-bind:class="weatherType"></span>
-        <span class="bright">{{ temperature }}&deg;C</span>
+      <span class="wi weathericon pr-1" v-bind:class="weatherType"></span>
+      <span class="bright">{{ temperature }}&deg;C</span>
     </div>
   </div>
 </template>
@@ -138,5 +138,9 @@ export default {
   line-height: 65px;
   display: inline-block;
   transform: translate(0, -3px);
+}
+
+.pr-1 {
+  padding-right: 1rem;
 }
 </style>

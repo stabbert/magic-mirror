@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="normal medium">{{ date }}</div>
-    <div class="bright large light">{{ hours }}:{{ minutes }}<sup class="dimmed">{{ seconds }}</sup></div>
+    <div class="bright large light">
+      {{ hours }}:{{ minutes }}<sup class="dimmed">{{ seconds }}</sup>
+    </div>
   </div>
 </template>
 

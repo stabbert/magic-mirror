@@ -2,12 +2,19 @@
   <div class="weatherforecast">
     <header>{{ header }}</header>
     <table class="small">
-      <tr class="normal" v-bind:style="{ opacity: forecast.opacity }" v-for="forecast in forecasts" :key="forecast.$index">
+      <tr
+        class="normal"
+        v-bind:style="{ opacity: forecast.opacity }"
+        v-for="forecast in forecasts"
+        :key="forecast.$index"
+      >
         <td class="align-left bright day">{{ forecast.day }}</td>
         <td class="bright weathericon">
           <span class="wi weathericon" v-bind:class="forecast.icon"></span>
         </td>
-        <td class="align-right bright max-temp">{{ forecast.maxTemp }}&deg;C</td>
+        <td class="align-right bright max-temp">
+          {{ forecast.maxTemp }}&deg;C
+        </td>
         <td class="align-right max-temp">{{ forecast.minTemp }}&deg;C</td>
       </tr>
     </table>
@@ -39,11 +46,11 @@ const iconTable = {
 };
 
 /* parserDataWeather(data)
-	 *
-	 * Use the parse to keep the same struct between daily and forecast Endpoint
-	 * from Openweather
-	 *
-	 */
+ *
+ * Use the parse to keep the same struct between daily and forecast Endpoint
+ * from Openweather
+ *
+ */
 function parserDataWeather(data) {
   if (data.hasOwnProperty("main")) {
     data["temp"] = { min: data.main.temp_min, max: data.main.temp_max };

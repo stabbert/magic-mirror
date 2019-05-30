@@ -3,34 +3,34 @@
     <div class="region fullscreen below"><div class="container"></div></div>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <div class="region top bar">
-		  <div class="container"></div>
-		  <div class="region top left">
+      <div class="container"></div>
+      <div class="region top left">
         <div class="container">
-          <Clock/>
+          <Clock />
         </div>
       </div>
-		  <div class="region top right">
+      <div class="region top right">
         <div class="container">
-          <Weather v-if="$store.state.config.loaded"/>
+          <Weather v-if="$store.state.config.loaded" />
         </div>
       </div>
-	  </div>
-	  <div class="region upper third">
+    </div>
+    <div class="region upper third">
       <div class="container">
-        <WeatherForecast v-if="$store.state.config.loaded"/>
+        <WeatherForecast v-if="$store.state.config.loaded" />
       </div>
     </div>
-	  <div class="region lower third">
+    <div class="region lower third">
       <div class="container">
-        <Calendar v-if="$store.state.config.loaded"/>
+        <Calendar v-if="$store.state.config.loaded" />
       </div>
     </div>
-	  <div class="region bottom bar">
-		  <div class="container"></div>
-		  <div class="region bottom left"><div class="container"></div></div>
-		  <div class="region bottom center"><div class="container"></div></div>
-		  <div class="region bottom right"><div class="container"></div></div>
-	  </div>
+    <div class="region bottom bar">
+      <div class="container"></div>
+      <div class="region bottom left"><div class="container"></div></div>
+      <div class="region bottom center"><div class="container"></div></div>
+      <div class="region bottom right"><div class="container"></div></div>
+    </div>
   </div>
 </template>
 

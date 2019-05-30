@@ -2,7 +2,12 @@
   <div class="calendar">
     <header>{{ header }}</header>
     <table class="small">
-      <tr class="normal bright" v-bind:style="{ opacity: event.opacity }" v-for="event in events" :key="event.$index">
+      <tr
+        class="normal bright"
+        v-bind:style="{ opacity: event.opacity }"
+        v-for="event in events"
+        :key="event.$index"
+      >
         <td class="symbol align-right">
           <span class="fa fa-fw" v-bind:class="event.symbol"></span>
         </td>
