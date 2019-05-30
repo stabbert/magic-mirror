@@ -33,7 +33,7 @@
     "fadePoint": 0.25,
     "appid": "YOUR_OPENWEATHER_API_KEY",
     "location": "YOUR_LOCATION",
-    "locationID": "2950YOUR_LOCATION_ID159",
+    "locationID": "YOUR_LOCATION_ID",
     "maxNumberOfDays": 7,
     "updateIntervall": 7200000
   }
