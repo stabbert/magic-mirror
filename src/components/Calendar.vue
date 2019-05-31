@@ -104,8 +104,10 @@ function calculateTime(now, newEvent) {
       } else {
         time = capFirst(moment(newEvent.startDate, "x").fromNow());
       }
-    } else {
+    } else if (newEvent.endDate <= now) {
       time = "Noch " + moment(newEvent.endDate, "x").fromNow(true);
+    } else {
+      time = capFirst(moment(newEvent.endDate, "x").fromNow());
     }
   }
   return time;
