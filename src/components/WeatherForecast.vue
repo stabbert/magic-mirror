@@ -9,10 +9,10 @@
         :key="forecast.$index"
       >
         <td class="align-left bright day">{{ forecast.day }}</td>
-        <td class="bright weathericon">
-          <span class="wi weathericon" v-bind:class="forecast.icon"></span>
+        <td class="bright weather-icon">
+          <span class="wi" v-bind:class="forecast.icon"></span>
         </td>
-        <td class="align-right bright max-temp">
+        <td class="align-right bright min-temp">
           {{ forecast.maxTemp }}&deg;C
         </td>
         <td class="align-right max-temp">{{ forecast.minTemp }}&deg;C</td>
@@ -163,16 +163,18 @@ export default {
 @import "../../node_modules/weathericons/css/weather-icons.min.css";
 
 .weatherforecast .day {
-  padding-left: 7px;
+  padding-left: 0;
 }
 
 .weatherforecast .weather-icon {
-  padding-right: 30px;
   text-align: center;
 }
 
 .weatherforecast .min-temp {
-  padding-left: 20px;
-  padding-right: 0;
+  padding: 0;
+}
+
+.weatherforecast .max-temp {
+  padding: 0;
 }
 </style>

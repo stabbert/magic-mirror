@@ -11,7 +11,9 @@
         <td class="symbol align-right">
           <span class="fa fa-fw" v-bind:class="event.symbol"></span>
         </td>
-        <td class="title"><span v-html="event.title"></span></td>
+        <td class="title">
+          <span v-html="event.title"></span>
+        </td>
         <td class="time light">{{ event.time }}</td>
       </tr>
     </table>
@@ -27,6 +29,7 @@ const oneSecond = 1000; // 1,000 milliseconds
 const oneMinute = oneSecond * 60;
 const oneHour = oneMinute * 60;
 const oneDay = oneHour * 24;
+const twoDay = 2 * oneDay;
 
 function shorten(string, maxLength, wrapEvents) {
   if (typeof string !== "string") {
@@ -78,38 +81,49 @@ function isFullDayEvent(event) {
   return event.duration.days > 0 ? true : false;
 }
 
-function calculateTime(now, newEvent) {
+function calculateTimeTitle(now, newEvent) {
   let time;
+
   if (newEvent.fullDayEvent) {
-    if (newEvent.today) {
-      time = "Heute";
-    } else if (
-      newEvent.startDate - now < oneDay &&
-      newEvent.startDate - now > 0
+    const startOnlyDate = newEvent.startDate.clone().startOf("date");
+    const endOnlyDate = newEvent.endDate.clone().startOf("date");
+    if (
+      newEvent.startDate.isSame(startOnlyDate) &&
+      newEvent.endDate.isSame(endOnlyDate)
     ) {
-      time = "Morgen";
-    } else if (
-      newEvent.startDate - now < 2 * oneDay &&
-      newEvent.startDate - now > 0
-    ) {
-      time = "Übermorgen";
-    } else {
-      time = capFirst(moment(newEvent.startDate, "x").fromNow());
-    }
-  } else {
-    if (newEvent.startDate >= now) {
-      if (newEvent.startDate - now < 2 * oneDay) {
-        // Otherwise just say 'Today/Tomorrow at such-n-such time'
-        time = capFirst(moment(newEvent.startDate, "x").calendar());
+      const nowOnlyDate = now.clone().startOf("date");
+      if (startOnlyDate.isSame(nowOnlyDate)) {
+        time = "Heute";
       } else {
-        time = capFirst(moment(newEvent.startDate, "x").fromNow());
+        const diff = newEvent.startDate.diff(now);
+        if (diff > 0) {
+          if (diff < oneDay) {
+            time = "Morgen";
+          } else if (diff < twoDay) {
+            time = "Übermorgen";
+          }
+        }
       }
-    } else if (newEvent.endDate <= now) {
-      time = "Noch " + moment(newEvent.endDate, "x").fromNow(true);
-    } else {
-      time = capFirst(moment(newEvent.endDate, "x").fromNow());
     }
   }
+
+  if (time) {
+    return time;
+  }
+
+  if (newEvent.startDate.isAfter(now)) {
+    if (newEvent.startDate.diff(now) < twoDay) {
+      // Otherwise just say 'Today/Tomorrow at such-n-such time'
+      time = capFirst(newEvent.startDate.calendar());
+    } else {
+      time = capFirst(newEvent.startDate.fromNow());
+    }
+  } else if (newEvent.endDate.isAfter(now)) {
+    time = "Noch " + newEvent.endDate.fromNow(true);
+  } else {
+    time = capFirst(newEvent.endDate.fromNow());
+  }
+
   return time;
 }
 
@@ -130,23 +144,21 @@ export default {
       longDateFormat: { LT: "HH:mm" }
     });
 
+    let updateTimeInAllEventsIntervalId;
+
     function updateCalendar() {
-      const now = new Date();
-      const today = moment()
-        .startOf("day")
-        .toDate();
-      const future = moment()
-        .startOf("day")
-        .add(config.maximumNumberOfDays, "days")
-        .subtract(1, "seconds")
-        .toDate(); // Subtract 1 second so that events that start on the middle of the night will not repeat.
-
-      let calendarFetches = [];
-      let updateTimeInAllEventsIntervalId;
-
       if (updateTimeInAllEventsIntervalId) {
         clearInterval(updateTimeInAllEventsIntervalId);
       }
+
+      const now = moment();
+      const today = now.clone().startOf("date");
+      const future = today
+        .clone()
+        .add(config.maximumNumberOfDays, "days")
+        .subtract(1, "seconds"); // Subtract 1 second so that events that start on the middle of the night will not repeat.
+
+      let calendarFetches = [];
 
       for (let calendar of config.calendars) {
         let url = calendar.url.replace("webcal://", "http://");
@@ -249,23 +261,18 @@ export default {
                     }
                   }
 
-                  // calculate the duration f the event for use with recurring events.
-                  let duration =
-                    parseInt(endDate.format("x")) -
-                    parseInt(startDate.format("x"));
+                  // calculate the duration of the event for use with recurring events.
+                  let duration = endDate.diff(startDate);
 
                   for (let d in dates) {
                     startDate = dates[d];
-                    endDate = moment(
-                      parseInt(startDate.format("x")) + duration,
-                      "x"
-                    );
+                    endDate = startDate.clone().add(duration);
 
-                    if (endDate.format("x") > now) {
+                    if (endDate.isAfter(now)) {
                       newEvents.push({
                         title: title,
-                        startDate: startDate.format("x"),
-                        endDate: endDate.format("x"),
+                        startDate: startDate,
+                        endDate: endDate,
                         fullDayEvent: isFullDayEvent(event),
                         location: location,
                         description: description
@@ -273,32 +280,20 @@ export default {
                     }
                   }
                 } else {
-                  // console.log("Single event ...");
-                  // Single event.
-                  let fullDayEvent = isFullDayEvent(event);
-
-                  if (!fullDayEvent && endDate < now) {
-                    //window.console.log("It's not a fullday event, and it is in the past. So skip: " + title);
+                  if (endDate.isSameOrBefore(now)) {
                     continue;
                   }
 
-                  if (fullDayEvent && endDate <= today) {
-                    //window.console.log("It's a fullday event, and it is before today. So skip: " + title);
-                    continue;
-                  }
-
-                  if (startDate > future) {
-                    //window.console.log("It exceeds the maximumNumberOfDays limit. So skip: " + title);
+                  if (startDate.isAfter(future)) {
                     continue;
                   }
 
                   // Every thing is good. Add it to the list.
-
                   newEvents.push({
                     title: title,
-                    startDate: startDate.format("x"),
-                    endDate: endDate.format("x"),
-                    fullDayEvent: fullDayEvent,
+                    startDate: startDate,
+                    endDate: endDate,
+                    fullDayEvent: isFullDayEvent(event),
                     location: location,
                     description: description
                   });
@@ -319,7 +314,7 @@ export default {
         );
 
         allNewEvents.sort(function(a, b) {
-          return a.startDate - b.startDate;
+          return a.startDate.valueOf() - b.startDate.valueOf();
         });
 
         let maximumAllNewEvents = allNewEvents.slice(0, config.maximumEntries);
@@ -345,7 +340,7 @@ export default {
               config.maxTitleLength,
               config.wrapEvents
             ),
-            time: calculateTime(now, newEvent),
+            time: calculateTimeTitle(now, newEvent),
             symbol:
               newEvent.title.indexOf("Geburtstag") === -1
                 ? "fa-calendar-check-o"
@@ -355,9 +350,9 @@ export default {
         });
 
         function updateTimeInAllEvents() {
-          const now = new Date();
+          const now = moment();
           maximumAllNewEvents.forEach((newEvent, index) => {
-            self.events[index].time = calculateTime(now, newEvent);
+            self.events[index].time = calculateTimeTitle(now, newEvent);
           });
         }
 
@@ -382,6 +377,7 @@ export default {
   padding-right: 10px;
   font-size: 80%;
   vertical-align: top;
+  width: 20px;
 }
 
 .calendar .symbol span {
@@ -397,7 +393,7 @@ export default {
 }
 
 .calendar .time {
-  padding-left: 30px;
+  padding-left: 10px;
   text-align: right;
   vertical-align: top;
 }
