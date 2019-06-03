@@ -120,6 +120,11 @@ export default {
                 }
               }
             } else {
+              // Stop processing when maxNumberOfDays is reached
+              if (forecast.length === config.maxNumberOfDays) {
+                break;
+              }
+
               const icon = iconTable[forecast.weather[0].icon];
 
               forecastData = {
@@ -133,10 +138,6 @@ export default {
 
               lastDay = day;
 
-              // Stop processing when maxNumberOfDays is reached
-              if (forecast.length === config.maxNumberOfDays) {
-                break;
-              }
               duplicateIcons = {};
               duplicateIcons[icon] = 1;
               highestOccurrenceIconCount = 1;
