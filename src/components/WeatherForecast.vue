@@ -12,9 +12,7 @@
         <td class="bright weather-icon">
           <span class="wi" v-bind:class="forecast.icon"></span>
         </td>
-        <td class="align-right bright min-temp">
-          {{ forecast.maxTemp }}&deg;C
-        </td>
+        <td class="align-right bright min-temp">{{ forecast.maxTemp }}&deg;C</td>
         <td class="align-right max-temp">{{ forecast.minTemp }}&deg;C</td>
       </tr>
     </table>
@@ -86,12 +84,16 @@ export default {
           let lastDay = null;
           let forecastData = {};
 
+          let duplicateIcons = {};
+          let highestOccurrenceIconCount = 0;
+
           for (let index in data.list) {
             let forecast = data.list[index];
 
             parserDataWeather(forecast); // hack issue #1017
 
-            let day = moment(forecast.dt, "X").format("ddd");
+            const forecastDate = moment(forecast.dt, "X");
+            const day = forecastDate.format("ddd");
 
             if (day === lastDay) {
               //Log.log("Compare max: ", forecast.temp.max, parseFloat(forecastData.maxTemp));
@@ -106,15 +108,23 @@ export default {
                   : forecastData.minTemp;
 
               // Since we don't want an icon from the start of the day (in the middle of the night)
-              // we update the icon as long as it's somewhere during the day.
-              let hour = moment(forecast.dt, "X").format("H");
-              if (hour >= 8 && hour <= 17) {
-                forecastData.icon = iconTable[forecast.weather[0].icon];
+              // we update the icon as long as it's somewhere during the day with the highest occurrence.
+              const hour = forecastDate.hour();
+              if (hour >= 8 && hour <= 18) {
+                const icon = iconTable[forecast.weather[0].icon];
+                const duplicateIconCount = duplicateIcons[icon] + 1 || 1;
+                duplicateIcons[icon] = duplicateIconCount;
+                if (highestOccurrenceIconCount < duplicateIconCount) {
+                  forecastData.icon = icon;
+                  highestOccurrenceIconCount = duplicateIconCount;
+                }
               }
             } else {
+              const icon = iconTable[forecast.weather[0].icon];
+
               forecastData = {
                 day: day,
-                icon: iconTable[forecast.weather[0].icon],
+                icon: icon,
                 maxTemp: parseFloat(forecast.temp.max).toFixed(1),
                 minTemp: parseFloat(forecast.temp.min).toFixed(1)
               };
@@ -127,6 +137,9 @@ export default {
               if (forecast.length === config.maxNumberOfDays) {
                 break;
               }
+              duplicateIcons = {};
+              duplicateIcons[icon] = 1;
+              highestOccurrenceIconCount = 1;
             }
           }
 
