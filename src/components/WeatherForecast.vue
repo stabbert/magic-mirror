@@ -12,7 +12,9 @@
         <td class="bright weather-icon">
           <span class="wi" v-bind:class="forecast.icon"></span>
         </td>
-        <td class="align-right bright min-temp">{{ forecast.maxTemp }}&deg;C</td>
+        <td class="align-right bright min-temp">
+          {{ forecast.maxTemp }}&deg;C
+        </td>
         <td class="align-right max-temp">{{ forecast.minTemp }}&deg;C</td>
       </tr>
     </table>

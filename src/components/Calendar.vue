@@ -29,7 +29,7 @@ const oneSecond = 1000; // 1,000 milliseconds
 const oneMinute = oneSecond * 60;
 const oneHour = oneMinute * 60;
 const oneDay = oneHour * 24;
-const twoDay = 2 * oneDay;
+const twoDay = oneDay * 2;
 
 function shorten(string, maxLength, wrapEvents) {
   if (typeof string !== "string") {
@@ -113,15 +113,16 @@ function calculateTimeTitle(now, newEvent) {
 
   if (newEvent.startDate.isAfter(now)) {
     if (newEvent.startDate.diff(now) < twoDay) {
-      // Otherwise just say 'Today/Tomorrow at such-n-such time'
       time = capFirst(newEvent.startDate.calendar());
     } else {
-      time = capFirst(newEvent.startDate.fromNow());
+      const startOnlyDate = newEvent.startDate.clone().startOf("date");
+      const nowOnlyDate = now.clone().startOf("date");
+      time = capFirst(startOnlyDate.from(nowOnlyDate));
     }
   } else if (newEvent.endDate.isAfter(now)) {
-    time = "Noch " + newEvent.endDate.fromNow(true);
+    time = "Noch " + newEvent.endDate.from(now, true);
   } else {
-    time = capFirst(newEvent.endDate.fromNow());
+    time = capFirst(newEvent.endDate.from(now));
   }
 
   return time;
@@ -358,7 +359,7 @@ export default {
 
         updateTimeInAllEventsIntervalId = setInterval(
           updateTimeInAllEvents,
-          60000
+          oneMinute
         );
       });
     }
@@ -382,8 +383,6 @@ export default {
 
 .calendar .symbol span {
   display: inline-block;
-  -ms-transform: translate(0, 2px); /* IE 9 */
-  -webkit-transform: translate(0, 2px); /* Safari */
   transform: translate(0, 2px);
 }
 
