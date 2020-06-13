@@ -162,7 +162,7 @@ export default {
       let calendarFetches = [];
 
       for (let calendar of config.calendars) {
-        let url = calendar.url.replace("webcal://", "http://");
+        let url = calendar.url.replace("webcal://", "https://");
 
         let opts = {
           headers: {
