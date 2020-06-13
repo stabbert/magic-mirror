@@ -1,11 +1,10 @@
 <template>
   <div>
     <div class="normal medium">
-      <span class="wi wi-strong-wind dimmed"></span>
+      <span class="wi wi-strong-wind dimmed pr-1"></span>
       <span>{{ windSpeed }}</span>
       <sup>{{ windDirection }}</sup>
-      <span>&nbsp;</span>
-      <span class="wi dimmed" v-bind:class="sunriseSunsetIcon"></span>
+      <span class="wi dimmed pl-1 pr-1" v-bind:class="sunriseSunsetIcon"></span>
       <span>{{ sunriseSunsetTime }}</span>
     </div>
     <div class="large light">
@@ -140,7 +139,11 @@ export default {
   transform: translate(0, -3px);
 }
 
+.pl-1 {
+  padding-left: 0.5rem;
+}
+
 .pr-1 {
-  padding-right: 1rem;
+  padding-right: 0.5rem;
 }
 </style>
