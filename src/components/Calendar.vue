@@ -82,8 +82,6 @@ function isFullDayEvent(event) {
 }
 
 function calculateTimeTitle(now, newEvent) {
-  let time;
-
   if (newEvent.fullDayEvent) {
     const startOnlyDate = newEvent.startDate.clone().startOf("date");
     const endOnlyDate = newEvent.endDate.clone().startOf("date");
@@ -93,39 +91,33 @@ function calculateTimeTitle(now, newEvent) {
     ) {
       const nowOnlyDate = now.clone().startOf("date");
       if (startOnlyDate.isSame(nowOnlyDate)) {
-        time = "Heute";
+        return "Heute";
       } else {
         const diff = newEvent.startDate.diff(now);
         if (diff > 0) {
           if (diff < oneDay) {
-            time = "Morgen";
+            return "Morgen";
           } else if (diff < twoDay) {
-            time = "Übermorgen";
+            return "Übermorgen";
           }
         }
       }
     }
   }
 
-  if (time) {
-    return time;
-  }
-
   if (newEvent.startDate.isAfter(now)) {
     if (newEvent.startDate.diff(now) < twoDay) {
-      time = capFirst(newEvent.startDate.calendar());
+      return capFirst(newEvent.startDate.calendar());
     } else {
       const startOnlyDate = newEvent.startDate.clone().startOf("date");
       const nowOnlyDate = now.clone().startOf("date");
-      time = capFirst(startOnlyDate.from(nowOnlyDate));
+      return capFirst(startOnlyDate.from(nowOnlyDate));
     }
   } else if (newEvent.endDate.isAfter(now)) {
-    time = "Noch " + newEvent.endDate.from(now, true);
+    return "Noch " + newEvent.endDate.from(now, true);
   } else {
-    time = capFirst(newEvent.endDate.from(now));
+    return capFirst(newEvent.endDate.from(now));
   }
-
-  return time;
 }
 
 export default {
