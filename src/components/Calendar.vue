@@ -120,6 +120,22 @@ function calculateTimeTitle(now, newEvent) {
   }
 }
 
+function uniq(array) {
+  let result = [];
+  let seen = new Set();
+
+  outer: for (let index = 0; index < array.length; index++) {
+    let value = array[index];
+    if (seen.has(value)) {
+      continue outer;
+    }
+    seen.add(value);
+    result.push(value);
+  }
+
+  return result;
+}
+
 export default {
   name: "Calendar",
   data() {
@@ -181,24 +197,20 @@ export default {
               let comp = new ICAL.Component(parsedICS);
               let allComp = comp.getAllSubcomponents();
               let newEvents = [];
-              let parsedEvents = [];
               let shiftedRecurrenceEventMap = {};
 
               for (let index in allComp) {
                 let vevent = allComp[index];
                 let event = new ICAL.Event(vevent);
+
                 if (event.recurrenceId) {
                   shiftedRecurrenceEventMap[event.uid] = event;
                 }
-                parsedEvents.push(event);
-              }
-
-              for (let index in parsedEvents) {
-                let event = parsedEvents[index];
 
                 if (!event.startDate) {
                   continue;
                 }
+
                 let startDate = moment(event.startDate.toJSDate());
                 let endDate;
 
@@ -217,9 +229,6 @@ export default {
                 } else if (event.description) {
                   title = event.description;
                 }
-
-                let location = event.location || false;
-                let description = event.description || false;
 
                 // Replaying event
                 if (event.isRecurring()) {
@@ -267,9 +276,7 @@ export default {
                         title: title,
                         startDate: startDate,
                         endDate: endDate,
-                        fullDayEvent: isFullDayEvent(event),
-                        location: location,
-                        description: description
+                        fullDayEvent: isFullDayEvent(event)
                       });
                     }
                   }
@@ -287,9 +294,7 @@ export default {
                     title: title,
                     startDate: startDate,
                     endDate: endDate,
-                    fullDayEvent: isFullDayEvent(event),
-                    location: location,
-                    description: description
+                    fullDayEvent: isFullDayEvent(event)
                   });
                 }
               }
@@ -301,10 +306,12 @@ export default {
       }
 
       Promise.all(calendarFetches).then(allCalendarNewEvents => {
-        let allNewEvents = allCalendarNewEvents.reduce(
-          (allCalendarNewEvent, calendarNewEvent) =>
-            allCalendarNewEvent.concat(calendarNewEvent),
-          []
+        let allNewEvents = uniq(
+          allCalendarNewEvents.reduce(
+            (allCalendarNewEvent, calendarNewEvent) =>
+              allCalendarNewEvent.concat(calendarNewEvent),
+            []
+          )
         );
 
         allNewEvents.sort(function(a, b) {
