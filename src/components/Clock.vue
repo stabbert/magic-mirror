@@ -2,7 +2,8 @@
   <div>
     <div class="normal medium">{{ date }}</div>
     <div class="bright large light">
-      {{ hours }}:{{ minutes }}<sup class="dimmed">{{ seconds }}</sup>
+      {{ hours }}:{{ minutes }}
+      <sup class="dimmed">{{ seconds }}</sup>
     </div>
   </div>
 </template>
@@ -12,7 +13,7 @@ import moment from "moment";
 
 export default {
   name: "Clock",
-  data: function() {
+  data() {
     return {
       date: "",
       hours: "",
@@ -20,7 +21,7 @@ export default {
       seconds: ""
     };
   },
-  created: function() {
+  created() {
     let self = this;
     setInterval(function() {
       let now = moment().locale(self.$store.state.config.common.language);

@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <div class="region fullscreen below"><div class="container"></div></div>
+    <div class="region fullscreen below">
+      <div class="container"></div>
+    </div>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <div class="region top bar">
       <div class="container"></div>
@@ -27,9 +29,15 @@
     </div>
     <div class="region bottom bar">
       <div class="container"></div>
-      <div class="region bottom left"><div class="container"></div></div>
-      <div class="region bottom center"><div class="container"></div></div>
-      <div class="region bottom right"><div class="container"></div></div>
+      <div class="region bottom left">
+        <div class="container"></div>
+      </div>
+      <div class="region bottom center">
+        <div class="container"></div>
+      </div>
+      <div class="region bottom right">
+        <div class="container"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -47,6 +55,9 @@ export default {
     Clock,
     Weather,
     WeatherForecast
+  },
+  created() {
+    this.$store.dispatch("loadConfig");
   }
 };
 </script>

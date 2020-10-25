@@ -12,10 +12,8 @@
         <td class="bright weather-icon">
           <span class="wi" v-bind:class="forecast.icon"></span>
         </td>
-        <td class="align-right bright min-temp">
-          {{ forecast.maxTemp }}&deg;C
-        </td>
-        <td class="align-right max-temp">{{ forecast.minTemp }}&deg;C</td>
+        <td class="align-right bright max-temp">{{ forecast.maxTemp }}&deg;C</td>
+        <td class="align-right min-temp">{{ forecast.minTemp }}&deg;C</td>
       </tr>
     </table>
   </div>
@@ -52,7 +50,7 @@ const iconTable = {
  *
  */
 function parserDataWeather(data) {
-  if (data.hasOwnProperty("main")) {
+  if (Object.prototype.hasOwnProperty.call(data, "main")) {
     data["temp"] = { min: data.main.temp_min, max: data.main.temp_max };
   }
   return data;
@@ -60,13 +58,13 @@ function parserDataWeather(data) {
 
 export default {
   name: "Weather-Forecast",
-  data: function() {
+  data() {
     return {
       header: "",
       forecasts: []
     };
   },
-  created: function() {
+  created() {
     const config = this.$store.state.config.weatherForecast;
     let self = this;
     self.header = config.header;

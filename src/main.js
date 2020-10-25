@@ -1,15 +1,9 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import App from "./App.vue";
 import store from "./store";
 import "./assets/css/main.css";
 import "./assets/fonts/roboto.css";
 
-Vue.config.productionTip = false;
-
-new Vue({
-  store,
-  render: h => h(App),
-  created: function() {
-    this.$store.dispatch("loadConfig");
-  }
-}).$mount("#app");
+createApp(App)
+  .use(store)
+  .mount("#app");

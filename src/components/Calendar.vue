@@ -122,13 +122,13 @@ function calculateTimeTitle(now, newEvent) {
 
 export default {
   name: "Calendar",
-  data: function() {
+  data() {
     return {
       header: "",
       events: []
     };
   },
-  created: function() {
+  created() {
     const config = this.$store.state.config.calendar;
     let self = this;
     self.header = config.header;
@@ -158,7 +158,8 @@ export default {
 
         let opts = {
           headers: {
-            "Access-Control-Allow-Origin": url
+            "Access-Control-Allow-Origin": url,
+            "Content-Type": "text/calendar; charset=UTF-8"
           }
         };
 

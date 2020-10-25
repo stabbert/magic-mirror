@@ -76,7 +76,7 @@ function deg2Cardinal(deg) {
 
 export default {
   name: "Weather",
-  data: function() {
+  data() {
     return {
       windSpeed: "",
       windDirection: "",
@@ -86,7 +86,7 @@ export default {
       temperature: ""
     };
   },
-  created: function() {
+  created() {
     const config = this.$store.state.config.weather;
     let self = this;
     let openweatherUrl =

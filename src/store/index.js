@@ -1,11 +1,8 @@
-import Vue from "vue";
-import Vuex from "vuex";
-
-Vue.use(Vuex);
+import { createStore } from "vuex";
 
 const LOAD_CONFIG = "LOAD_CONFIG";
 
-export default new Vuex.Store({
+export default createStore({
   state: {
     config: {
       loaded: false
