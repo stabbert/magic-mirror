@@ -114,7 +114,7 @@ export default {
                 const icon = iconTable[forecast.weather[0].icon];
                 const duplicateIconCount = duplicateIcons[icon] + 1 || 1;
                 duplicateIcons[icon] = duplicateIconCount;
-                if (highestOccurrenceIconCount < duplicateIconCount) {
+                if (highestOccurrenceIconCount <= duplicateIconCount) {
                   forecastData.icon = icon;
                   highestOccurrenceIconCount = duplicateIconCount;
                 }
