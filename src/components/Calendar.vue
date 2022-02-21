@@ -209,6 +209,7 @@ export default {
 
       for (let calendar of config.calendars) {
         let url = calendar.url.replace("webcal://", "https://");
+        let auth = calendar.auth;
 
         let opts = {
           headers: {
@@ -217,12 +218,13 @@ export default {
           },
         };
 
-        if (calendar.auth) {
-          opts.auth = {
-            user: calendar.auth.user,
-            pass: calendar.auth.pass,
-            sendImmediately: true,
-          };
+        if (auth) {
+          if (auth.method === "bearer") {
+            opts.headers["Authorization"] = "Bearer " + auth.pass;
+          } else {
+            opts.headers["Authorization"] =
+              "Basic " + btoa(auth.user + ":" + auth.pass);
+          }
         }
 
         calendarFetches.push(
