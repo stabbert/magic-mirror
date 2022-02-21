@@ -40,29 +40,30 @@ function shorten(string, maxLength, wrapEvents) {
   }
 
   if (wrapEvents === true) {
-    let temp = "";
-    let currentLine = "";
     let words = string.split(" ");
 
-    for (let i = 0; i < words.length; i++) {
-      let word = words[i];
-      if (
-        currentLine.length + word.length <
-        (typeof maxLength === "number" ? maxLength : 25) - 1
-      ) {
-        // max - 1 to account for a space
-        currentLine += word + " ";
-      } else {
-        if (currentLine.length > 0) {
-          temp += currentLine + "<br>" + word + " ";
-        } else {
-          temp += word + "<br>";
-        }
-        currentLine = "";
-      }
-    }
+    let wrappedWords = words.reduce(
+      (accumulator, currentValue) => {
+        let addNewLine =
+          accumulator.result.length >= accumulator.nextMaxLengthUntilLineBreak;
+        let newNextMaxLengthUntilLineBreak =
+          accumulator.nextMaxLengthUntilLineBreak +
+          (addNewLine ? maxLength : 0);
+        let newResult =
+          accumulator.result + (addNewLine ? "<br>" : "") + " " + currentValue;
 
-    return (temp + currentLine).trim();
+        return {
+          nextMaxLengthUntilLineBreak: newNextMaxLengthUntilLineBreak,
+          result: newResult,
+        };
+      },
+      {
+        nextMaxLengthUntilLineBreak: maxLength,
+        result: "",
+      }
+    );
+
+    return wrappedWords.result.trim();
   } else {
     if (string.length > maxLength) {
       return string.trim().slice(0, maxLength) + "&hellip;";
