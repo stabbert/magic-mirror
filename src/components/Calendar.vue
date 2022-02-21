@@ -3,16 +3,16 @@
     <header>{{ header }}</header>
     <table class="small">
       <tr
-        class="normal bright"
-        v-bind:style="{ opacity: event.opacity }"
         v-for="event in events"
         :key="event.$index"
+        class="normal bright"
+        :style="{ opacity: event.opacity }"
       >
         <td class="symbol align-right">
-          <span class="fa fa-fw" v-bind:class="event.symbol"></span>
+          <span class="fa fa-fw" :class="event.symbol"></span>
         </td>
         <td class="title">
-          <span v-html="event.title"></span>
+          <span>{{ event.title }}</span>
         </td>
         <td class="time light">{{ event.time }}</td>
       </tr>
@@ -32,7 +32,10 @@ const oneDayInMs = oneHourInMs * 24;
 const twoDayInMs = oneDayInMs * 2;
 
 function shorten(string, maxLength, wrapEvents) {
-  if (typeof string !== "string") {
+  if (
+    typeof string !== "string" ||
+    (maxLength && typeof maxLength !== "number")
+  ) {
     return "";
   }
 
@@ -61,11 +64,7 @@ function shorten(string, maxLength, wrapEvents) {
 
     return (temp + currentLine).trim();
   } else {
-    if (
-      maxLength &&
-      typeof maxLength === "number" &&
-      string.length > maxLength
-    ) {
+    if (string.length > maxLength) {
       return string.trim().slice(0, maxLength) + "&hellip;";
     } else {
       return string.trim();
@@ -181,7 +180,7 @@ export default {
   data() {
     return {
       header: "",
-      events: []
+      events: [],
     };
   },
   created() {
@@ -190,7 +189,7 @@ export default {
     self.header = config.header;
 
     moment.updateLocale(this.$store.state.config.common.language, {
-      longDateFormat: { LT: "HH:mm" }
+      longDateFormat: { LT: "HH:mm" },
     });
 
     let updateTimeInAllEventsIntervalId;
@@ -213,24 +212,24 @@ export default {
         let opts = {
           headers: {
             "Access-Control-Allow-Origin": url,
-            "Content-Type": "text/calendar; charset=UTF-8"
-          }
+            "Content-Type": "text/calendar; charset=UTF-8",
+          },
         };
 
         if (calendar.auth) {
           opts.auth = {
             user: calendar.auth.user,
             pass: calendar.auth.pass,
-            sendImmediately: true
+            sendImmediately: true,
           };
         }
 
         calendarFetches.push(
           fetch(url, opts)
-            .then(function(response) {
+            .then(function (response) {
               return response.text();
             })
-            .then(data => {
+            .then((data) => {
               let parsedICS = ICAL.parse(data);
               let comp = new ICAL.Component(parsedICS);
               let allComp = comp.getAllSubcomponents();
@@ -272,7 +271,7 @@ export default {
                 if (event.isRecurring()) {
                   let timesInMs = [];
                   let rule = event.iterator();
-                  let exceptionTimesInMs = rule.exDates.map(exceptionDate =>
+                  let exceptionTimesInMs = rule.exDates.map((exceptionDate) =>
                     toTimeInMs(exceptionDate)
                   );
                   let shiftedRecurrenceEvent =
@@ -319,7 +318,7 @@ export default {
                         title: title,
                         startTimeInMs: startTimeInMs,
                         endTimeInMs: endTimeInMs,
-                        fullDayEvent: isFullDayEvent(event)
+                        fullDayEvent: isFullDayEvent(event),
                       });
                     }
                   }
@@ -337,18 +336,18 @@ export default {
                     title: title,
                     startTimeInMs: startTimeInMs,
                     endTimeInMs: endTimeInMs,
-                    fullDayEvent: isFullDayEvent(event)
+                    fullDayEvent: isFullDayEvent(event),
                   });
                 }
               }
 
               return newEvents;
             })
-            .catch(error => window.console.error(error))
+            .catch((error) => window.console.error(error))
         );
       }
 
-      Promise.all(calendarFetches).then(allCalendarNewEvents => {
+      Promise.all(calendarFetches).then((allCalendarNewEvents) => {
         let allNewEvents = uniq(
           allCalendarNewEvents.reduce(
             (allCalendarNewEvent, calendarNewEvent) =>
@@ -357,7 +356,7 @@ export default {
           )
         );
 
-        allNewEvents.sort(function(a, b) {
+        allNewEvents.sort(function (a, b) {
           return a.startTimeInMs - b.startTimeInMs;
         });
 
@@ -389,7 +388,7 @@ export default {
               newEvent.title.indexOf("Geburtstag") === -1
                 ? "fa-calendar-check-o"
                 : "fa-birthday-cake",
-            opacity: opacity
+            opacity: opacity,
           };
         });
 
@@ -409,7 +408,7 @@ export default {
 
     updateCalendar();
     setInterval(updateCalendar, config.updateIntervall);
-  }
+  },
 };
 </script>
 

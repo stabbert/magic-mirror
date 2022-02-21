@@ -4,11 +4,11 @@
       <span class="wi wi-strong-wind dimmed pr-1"></span>
       <span>{{ windSpeed }}</span>
       <sup>{{ windDirection }}</sup>
-      <span class="wi dimmed pl-1 pr-1" v-bind:class="sunriseSunsetIcon"></span>
+      <span class="wi dimmed pl-1 pr-1" :class="sunriseSunsetIcon"></span>
       <span>{{ sunriseSunsetTime }}</span>
     </div>
     <div class="large light">
-      <span class="wi weathericon pr-1" v-bind:class="weatherType"></span>
+      <span class="wi weathericon pr-1" :class="weatherType"></span>
       <span class="bright">{{ temperature }}&deg;C</span>
     </div>
   </div>
@@ -35,7 +35,7 @@ const iconTable = {
   "10n": "wi-night-rain",
   "11n": "wi-night-thunderstorm",
   "13n": "wi-night-snow",
-  "50n": "wi-night-alt-cloudy-windy"
+  "50n": "wi-night-alt-cloudy-windy",
 };
 
 function deg2Cardinal(deg) {
@@ -83,7 +83,7 @@ export default {
       sunriseSunsetIcon: "",
       sunriseSunsetTime: "",
       weatherType: "",
-      temperature: ""
+      temperature: "",
     };
   },
   created() {
@@ -100,8 +100,8 @@ export default {
 
     function updateWeather() {
       fetch(openweatherUrl)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           let now = new Date();
           let sunrise = new Date(data.sys.sunrise * 1000);
           let sunset = new Date(data.sys.sunset * 1000);
@@ -120,12 +120,12 @@ export default {
           self.weatherType = iconTable[data.weather[0].icon];
           self.temperature = parseFloat(data.main.temp).toFixed(1);
         })
-        .catch(error => window.console.error(error));
+        .catch((error) => window.console.error(error));
     }
 
     updateWeather();
     setInterval(updateWeather, config.updateIntervall);
-  }
+  },
 };
 </script>
 

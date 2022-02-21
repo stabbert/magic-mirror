@@ -3,14 +3,14 @@
     <header>{{ header }}</header>
     <table class="small">
       <tr
-        class="normal"
-        v-bind:style="{ opacity: forecast.opacity }"
         v-for="forecast in forecasts"
         :key="forecast.$index"
+        class="normal"
+        :style="{ opacity: forecast.opacity }"
       >
         <td class="align-left bright day">{{ forecast.day }}</td>
         <td class="bright weather-icon">
-          <span class="wi" v-bind:class="forecast.icon"></span>
+          <span class="wi" :class="forecast.icon"></span>
         </td>
         <td class="align-right bright max-temp">
           {{ forecast.maxTemp }}&deg;C
@@ -42,7 +42,7 @@ const iconTable = {
   "10n": "wi-night-rain",
   "11n": "wi-night-thunderstorm",
   "13n": "wi-night-snow",
-  "50n": "wi-night-alt-cloudy-windy"
+  "50n": "wi-night-alt-cloudy-windy",
 };
 
 /* parserDataWeather(data)
@@ -59,11 +59,11 @@ function parserDataWeather(data) {
 }
 
 export default {
-  name: "Weather-Forecast",
+  name: "WeatherForecast",
   data() {
     return {
       header: "",
-      forecasts: []
+      forecasts: [],
     };
   },
   created() {
@@ -80,8 +80,8 @@ export default {
 
     function updateWeatherForecast() {
       fetch(openweatherUrl)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           let newForecasts = [];
           let lastDay = null;
           let forecastData = {};
@@ -133,7 +133,7 @@ export default {
                 day: day,
                 icon: icon,
                 maxTemp: parseFloat(forecast.temp.max).toFixed(1),
-                minTemp: parseFloat(forecast.temp.min).toFixed(1)
+                minTemp: parseFloat(forecast.temp.min).toFixed(1),
               };
 
               newForecasts.push(forecastData);
@@ -146,7 +146,7 @@ export default {
             }
           }
 
-          newForecasts.forEach(function(newForecast, index) {
+          newForecasts.forEach(function (newForecast, index) {
             let opacity = 1;
 
             if (config.fade && config.fadePoint < 1) {
@@ -166,12 +166,12 @@ export default {
 
           self.forecasts = newForecasts;
         })
-        .catch(error => window.console.error(error));
+        .catch((error) => window.console.error(error));
     }
 
     setTimeout(updateWeatherForecast);
     setInterval(updateWeatherForecast, config.updateIntervall);
-  }
+  },
 };
 </script>
 

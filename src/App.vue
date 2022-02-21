@@ -3,28 +3,27 @@
     <div class="region fullscreen below">
       <div class="container"></div>
     </div>
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <div class="region top bar">
       <div class="container"></div>
       <div class="region top left">
         <div class="container">
-          <Clock />
+          <clock />
         </div>
       </div>
       <div class="region top right">
         <div class="container">
-          <Weather v-if="$store.state.config.loaded" />
+          <weather v-if="$store.state.config.loaded" />
         </div>
       </div>
     </div>
     <div class="region upper third">
       <div class="container">
-        <WeatherForecast v-if="$store.state.config.loaded" />
+        <weather-forecast v-if="$store.state.config.loaded" />
       </div>
     </div>
     <div class="region lower third">
       <div class="container">
-        <Calendar v-if="$store.state.config.loaded" />
+        <calendar v-if="$store.state.config.loaded" />
       </div>
     </div>
     <div class="region bottom bar">
@@ -49,16 +48,16 @@ import Weather from "./components/Weather.vue";
 import WeatherForecast from "./components/WeatherForecast.vue";
 
 export default {
-  name: "app",
+  name: "App",
   components: {
     Calendar,
     Clock,
     Weather,
-    WeatherForecast
+    WeatherForecast,
   },
   created() {
     this.$store.dispatch("loadConfig");
-  }
+  },
 };
 </script>
 

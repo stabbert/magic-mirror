@@ -18,12 +18,12 @@ export default {
       date: "",
       hours: "",
       minutes: "",
-      seconds: ""
+      seconds: "",
     };
   },
   created() {
     let self = this;
-    setInterval(function() {
+    setInterval(function () {
       let now = moment().locale(self.$store.state.config.common.language);
       self.date = now.format("dddd, l");
       self.hours = timeNumber(now.hours());
@@ -34,6 +34,6 @@ export default {
         return number < 10 ? "0" + number : number;
       }
     }, 1000);
-  }
+  },
 };
 </script>
