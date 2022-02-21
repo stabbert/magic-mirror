@@ -22,7 +22,7 @@
 
 <script>
 import ICAL from "ical.js";
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 
 // Define second, minute, hour, and day variables
 const oneSecondInMs = 1000; // 1,000 milliseconds

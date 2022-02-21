@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 
 const iconTable = {
   "01d": "wi-day-sunny",
