@@ -28,6 +28,6 @@
     "vite": "^2.8.4"
   },
   "browserslist": [
-    "chrome >= 68"
+    "chrome >= 65"
   ]
 }
