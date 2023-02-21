@@ -1,42 +1,24 @@
 <template>
-  <div id="app">
-    <div class="region fullscreen below">
-      <div class="container"></div>
-    </div>
-    <div class="region top bar">
-      <div class="container"></div>
-      <div class="region top left">
-        <div class="container">
-          <clock />
-        </div>
-      </div>
-      <div class="region top right">
-        <div class="container">
-          <weather v-if="$store.state.config.loaded" />
-        </div>
-      </div>
-    </div>
-    <div class="region upper third">
+  <div class="region top bar">
+    <div class="region top left">
       <div class="container">
-        <weather-forecast v-if="$store.state.config.loaded" />
+        <clock />
       </div>
     </div>
-    <div class="region lower third">
+    <div class="region top right">
       <div class="container">
-        <calendar v-if="$store.state.config.loaded" />
+        <weather v-if="$store.state.config.loaded" />
       </div>
     </div>
-    <div class="region bottom bar">
-      <div class="container"></div>
-      <div class="region bottom left">
-        <div class="container"></div>
-      </div>
-      <div class="region bottom center">
-        <div class="container"></div>
-      </div>
-      <div class="region bottom right">
-        <div class="container"></div>
-      </div>
+  </div>
+  <div class="region upper third">
+    <div class="container">
+      <weather-forecast v-if="$store.state.config.loaded" />
+    </div>
+  </div>
+  <div class="region lower third">
+    <div class="container">
+      <calendar v-if="$store.state.config.loaded" />
     </div>
   </div>
 </template>

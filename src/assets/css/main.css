@@ -110,43 +110,11 @@ sup {
 }
 
 /**
- * Module styles.
- */
-
-.module {
-  margin-bottom: 30px;
-}
-
-.region.bottom .module {
-  margin-top: 30px;
-  margin-bottom: 0;
-}
-
-.no-wrap {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/**
  * Region Definitions.
  */
 
 .region {
   position: absolute;
-}
-
-.region.fullscreen {
-  position: absolute;
-  top: -60px;
-  left: -60px;
-  right: -60px;
-  bottom: -60px;
-  pointer-events: none;
-}
-
-.region.fullscreen * {
-  pointer-events: auto;
 }
 
 .region.right {
