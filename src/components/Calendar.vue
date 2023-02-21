@@ -11,9 +11,7 @@
         <td class="symbol align-right">
           <span class="fa fa-fw" :class="event.symbol"></span>
         </td>
-        <td class="title">
-          <span>{{ event.title }}</span>
-        </td>
+        <td class="title" v-html="event.title"></td>
         <td class="time light">{{ event.time }}</td>
       </tr>
     </table>
@@ -31,7 +29,7 @@ const oneHourInMs = oneMinuteInMs * 60;
 const oneDayInMs = oneHourInMs * 24;
 const twoDayInMs = oneDayInMs * 2;
 
-function shorten(string, maxLength, wrapEvents) {
+function shorten(string, maxLength) {
   if (
     typeof string !== "string" ||
     (maxLength && typeof maxLength !== "number")
@@ -39,38 +37,29 @@ function shorten(string, maxLength, wrapEvents) {
     return "";
   }
 
-  if (wrapEvents === true) {
-    let words = string.split(" ");
-
-    let wrappedWords = words.reduce(
-      (accumulator, currentValue) => {
-        let addNewLine =
-          accumulator.result.length >= accumulator.nextMaxLengthUntilLineBreak;
-        let newNextMaxLengthUntilLineBreak =
-          accumulator.nextMaxLengthUntilLineBreak +
-          (addNewLine ? maxLength : 0);
-        let newResult =
-          accumulator.result + (addNewLine ? "<br>" : "") + " " + currentValue;
-
-        return {
-          nextMaxLengthUntilLineBreak: newNextMaxLengthUntilLineBreak,
-          result: newResult,
-        };
-      },
-      {
-        nextMaxLengthUntilLineBreak: maxLength,
-        result: "",
-      }
-    );
-
-    return wrappedWords.result.trim();
+  if (string.length > maxLength) {
+    return string.trim().slice(0, maxLength) + "...";
   } else {
-    if (string.length > maxLength) {
-      return string.trim().slice(0, maxLength) + "&hellip;";
-    } else {
-      return string.trim();
-    }
+    return string.trim();
   }
+}
+
+const sanitizeUnsafeXssCharacterReplacements = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "/": "&#x2F;",
+};
+
+const sanitizeUnsafeXssCharactersRegExp = /[&<>"'/]/gi;
+
+function sanitize(string) {
+  return string.replace(
+    sanitizeUnsafeXssCharactersRegExp,
+    (match) => sanitizeUnsafeXssCharacterReplacements[match]
+  );
 }
 
 function capFirst(string) {
@@ -381,10 +370,8 @@ export default {
           }
 
           return {
-            title: shorten(
-              newEvent.title,
-              config.maxTitleLength,
-              config.wrapEvents
+            title: sanitize(
+              shorten(newEvent.title, config.maxTitleLength)
             ),
             time: calculateTimeTitle(nowTimeInMs, newEvent),
             symbol:
@@ -419,8 +406,6 @@ export default {
 @import "../../node_modules/font-awesome/css/font-awesome.min.css";
 
 .calendar .symbol {
-  padding-left: 0;
-  padding-right: 10px;
   font-size: 80%;
   vertical-align: top;
   width: 20px;
@@ -432,13 +417,12 @@ export default {
 }
 
 .calendar .title {
-  padding-left: 0;
-  padding-right: 0;
+  word-break: break-word;
 }
 
 .calendar .time {
-  padding-left: 10px;
   text-align: right;
   vertical-align: top;
+  width: 135px;
 }
 </style>

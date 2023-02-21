@@ -8,8 +8,7 @@
     "fadePoint": 0.25,
     "maximumEntries": 15,
     "maximumNumberOfDays": 365,
-    "maxTitleLength": 30,
-    "wrapEvents": true,
+    "maxTitleLength": 70,
     "updateIntervall": 3600000,
     "calendars": [
       {
