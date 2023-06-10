@@ -33,10 +33,8 @@
   });
 </script>
 
-<div>
-  <div class="normal medium">{clock.date}</div>
-  <div class="bright large light">
-    {clock.hours}:{clock.minutes}
-    <sup class="dimmed">{clock.seconds}</sup>
-  </div>
+<div class="normal medium">{clock.date}</div>
+<div class="bright large light">
+  {clock.hours}:{clock.minutes}
+  <sup class="dimmed">{clock.seconds}</sup>
 </div>

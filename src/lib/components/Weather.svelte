@@ -101,7 +101,7 @@
       })
       .catch((error) => window.console.error(error));
   }
- 
+
   onMount(() => {
     updateWeather();
 
@@ -111,33 +111,21 @@
   });
 </script>
 
-<div>
-  <div class="normal medium">
-    <span class="wi wi-strong-wind dimmed pr-1" />
-    <span>{weather.windSpeed}</span>
-    <sup>{weather.windDirection}</sup>
-    <span class="wi dimmed pl-1 pr-1 {weather.sunriseSunsetIcon}" />
-    <span>{weather.sunriseSunsetTime}</span>
-  </div>
-  <div class="large light">
-    <span class="wi weathericon pr-1 {weather.weatherType}" />
-    <span class="bright">{weather.temperature}&deg;C</span>
-  </div>
+<div class="normal medium">
+  <span class="wi wi-strong-wind dimmed" />
+  <span>{weather.windSpeed}</span>
+  <sup>{weather.windDirection}</sup>
+  <span class="wi dimmed {weather.sunriseSunsetIcon}" />
+  <span>{weather.sunriseSunsetTime}</span>
+</div>
+<div class="large light">
+  <span class="wi weathericon {weather.weatherType}" />
+  <span class="bright">{weather.temperature}&deg;C</span>
 </div>
 
 <style>
   .weathericon {
     font-size: 75%;
-    line-height: 65px;
-    display: inline-block;
     transform: translate(0, -3px);
-  }
-
-  .pl-1 {
-    padding-left: 0.5rem;
-  }
-
-  .pr-1 {
-    padding-right: 0.5rem;
   }
 </style>

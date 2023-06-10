@@ -17,18 +17,6 @@
   const oneDayInMs = oneHourInMs * 24;
   const twoDayInMs = oneDayInMs * 2;
 
-  function shorten(string, maxLength) {
-    if (typeof string !== 'string' || (maxLength && typeof maxLength !== 'number')) {
-      return '';
-    }
-
-    if (string.length > maxLength) {
-      return string.trim().slice(0, maxLength) + '...';
-    } else {
-      return string.trim();
-    }
-  }
-
   const sanitizeUnsafeXssCharacterReplacements = {
     '&': '&amp;',
     '<': '&lt;',
@@ -321,7 +309,7 @@
         }
 
         return {
-          title: sanitize(shorten(newEvent.title, config.maxTitleLength)),
+          title: sanitize(newEvent.title),
           time: calculateTimeTitle(nowTimeInMs, newEvent),
           symbol: newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-calendar-check-o' : 'fa-birthday-cake',
           opacity: opacity,
@@ -348,40 +336,47 @@
   });
 </script>
 
-<div class="calendar">
-  <header>{calendar.header}</header>
-  <table class="small">
-    {#each calendar.events as event}
-      <tr class="normal bright" style:opacity={event.opacity}>
-        <td class="symbol align-right">
-          <span class="fa fa-fw {event.symbol}" />
-        </td>
-        <td class="title">{@html event.title}</td>
-        <td class="time light">{event.time}</td>
-      </tr>
-    {/each}
-  </table>
-</div>
+<header class="normal">{calendar.header}</header>
+<table class="small">
+  {#each calendar.events as event}
+    <tr class="normal bright" style:opacity={event.opacity}>
+      <td class="symbol">
+        <span class="fa fa-fw {event.symbol}" />
+      </td>
+      <td class="title">{@html event.title}</td>
+      <td class="time light">{event.time}</td>
+    </tr>
+  {/each}
+</table>
 
 <style>
-  .calendar .symbol {
+  .symbol {
     font-size: 80%;
+    text-align: right;
     vertical-align: top;
     width: 20px;
   }
 
-  .calendar .symbol span {
+  .symbol span {
     display: inline-block;
     transform: translate(0, 2px);
   }
 
-  .calendar .title {
+  .title {
+    display: -webkit-box;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
     word-break: break-word;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
-  .calendar .time {
+  .time {
     text-align: right;
     vertical-align: top;
-    width: 135px;
+    white-space: nowrap;
   }
 </style>

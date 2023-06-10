@@ -154,38 +154,34 @@
   });
 </script>
 
-<div class="weatherforecast">
-  <header>{weatherForecast.header}</header>
-  <table class="small">
-    {#each weatherForecast.forecasts as forecast}
-      <tr class="normal" style:opacity={forecast.opacity}>
-        <td class="align-left bright day">{forecast.day}</td>
-        <td class="bright weather-icon">
-          <span class="wi {forecast.icon}" />
-        </td>
-        <td class="align-right bright max-temp">
-          {forecast.maxTemp}&deg;C
-        </td>
-        <td class="align-right min-temp">{forecast.minTemp}&deg;C</td>
-      </tr>
-    {/each}
-  </table>
-</div>
+<header class="normal">{weatherForecast.header}</header>
+<table class="small">
+  {#each weatherForecast.forecasts as forecast}
+    <tr class="normal" style:opacity={forecast.opacity}>
+      <td class="bright day">{forecast.day}</td>
+      <td class="bright weather-icon">
+        <span class="wi {forecast.icon}" />
+      </td>
+      <td class="bright temperatur">
+        {forecast.maxTemp}&deg;C
+      </td>
+      <td class="temperatur">{forecast.minTemp}&deg;C</td>
+    </tr>
+  {/each}
+</table>
 
 <style>
-  .weatherforecast .day {
+  .day {
     padding-left: 0;
+    text-align: left;
   }
 
-  .weatherforecast .weather-icon {
+  .weather-icon {
     text-align: center;
   }
 
-  .weatherforecast .min-temp {
+  .temperatur {
     padding: 0;
-  }
-
-  .weatherforecast .max-temp {
-    padding: 0;
+    text-align: right;
   }
 </style>

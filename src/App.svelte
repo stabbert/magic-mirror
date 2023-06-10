@@ -7,32 +7,48 @@
 </script>
 
 {#if $store.config.loaded}
-  <div class="region top bar">
-    <div class="region top left">
-      <div class="container">
-        <Clock />
-      </div>
+  <div class="container">
+    <div class="clock-item">
+      <Clock />
     </div>
-    <div class="region top right">
-      <div class="container">
-        <Weather />
-      </div>
+    <div class="weather-item">
+      <Weather />
     </div>
-  </div>
-  <div class="region upper third">
-    <div class="container">
+    <div class="weatherforecast-item">
       <WeatherForecast />
     </div>
-  </div>
-  <div class="region lower third">
-    <div class="container">
+    <div class="calendar-item">
       <Calendar />
     </div>
   </div>
 {/if}
 
 <style>
-  :global(body) {
-    zoom: 220%;
+  .container {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    grid-template-columns: 50% 50%;
+    grid-template-areas:
+      'clock weather'
+      'weather-forecast weather-forecast'
+      'calendar calendar';
+    row-gap: 3rem;
+  }
+
+  .calendar-item {
+    grid-area: calendar;
+  }
+
+  .clock-item {
+    grid-area: clock;
+  }
+
+  .weather-item {
+    grid-area: weather;
+    text-align: right;
+  }
+
+  .weatherforecast-item {
+    grid-area: weather-forecast;
   }
 </style>
