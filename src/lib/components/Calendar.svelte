@@ -341,7 +341,7 @@
   {#each calendar.events as event}
     <tr class="normal bright" style:opacity={event.opacity}>
       <td class="symbol">
-        <span class="fa fa-fw {event.symbol}" />
+        <i class="fa fa-fw {event.symbol}" />
       </td>
       <td class="title">{@html event.title}</td>
       <td class="time light">{event.time}</td>
@@ -357,7 +357,7 @@
     width: 20px;
   }
 
-  .symbol span {
+  .symbol i {
     display: inline-block;
     transform: translate(0, 2px);
   }

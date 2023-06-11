@@ -160,7 +160,7 @@
     <tr class="normal" style:opacity={forecast.opacity}>
       <td class="bright day">{forecast.day}</td>
       <td class="bright weather-icon">
-        <span class="wi {forecast.icon}" />
+        <i class="wi {forecast.icon}" />
       </td>
       <td class="bright temperatur">
         {forecast.maxTemp}&deg;C
