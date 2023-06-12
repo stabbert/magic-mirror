@@ -1,4 +1,6 @@
 <script>
+  import '../../../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css';
+  import '../../../node_modules/@fortawesome/fontawesome-free/css/solid.min.css';
   import '../../../node_modules/weathericons/css/weather-icons.min.css';
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
@@ -78,7 +80,7 @@
 <div class="normal medium">
   <i class="wi wi-strong-wind dimmed" />
   <span>{weather.windSpeed}</span>
-  <i class="fa fa-location-arrow" style="transform:rotate({weather.windDeg - 45}deg);" />
+  <i class="fa-solid fa-location-arrow" style="transform:rotate({weather.windDeg - 45}deg);" />
   <i class="wi dimmed {weather.sunriseSunsetIcon}" />
   <span>{weather.sunriseSunsetTime}</span>
 </div>

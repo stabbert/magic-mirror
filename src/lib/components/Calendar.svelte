@@ -1,5 +1,7 @@
 <script>
-  import '../../../node_modules/font-awesome/css/font-awesome.min.css';
+  import '../../../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css';
+  import '../../../node_modules/@fortawesome/fontawesome-free/css/regular.min.css';
+  import '../../../node_modules/@fortawesome/fontawesome-free/css/solid.min.css';
   import ICAL from 'ical.js';
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
@@ -311,7 +313,7 @@
         return {
           title: sanitize(newEvent.title),
           time: calculateTimeTitle(nowTimeInMs, newEvent),
-          symbol: newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-calendar-check-o' : 'fa-birthday-cake',
+          symbol: newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-regular fa-calendar-check' : 'fa-solid fa-birthday-cake',
           opacity: opacity,
         };
       });
@@ -341,7 +343,7 @@
   {#each calendar.events as event}
     <tr class="normal bright" style:opacity={event.opacity}>
       <td class="symbol">
-        <i class="fa fa-fw {event.symbol}" />
+        <i class="{event.symbol}" />
       </td>
       <td class="title">{@html event.title}</td>
       <td class="time light">{event.time}</td>
@@ -351,15 +353,8 @@
 
 <style>
   .symbol {
-    font-size: 80%;
-    text-align: right;
+    font-size: 90%;
     vertical-align: top;
-    width: 20px;
-  }
-
-  .symbol i {
-    display: inline-block;
-    transform: translate(0, 2px);
   }
 
   .title {
