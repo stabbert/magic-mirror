@@ -6,6 +6,7 @@
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
+  import { fetch } from '@tauri-apps/api/http';
 
   let calendar = {
     header: '',
@@ -162,6 +163,8 @@
           'Access-Control-Allow-Origin': url,
           'Content-Type': 'text/calendar; charset=UTF-8',
         },
+        method: 'GET',
+        responseType: 2,
       };
 
       if (auth) {
@@ -174,9 +177,7 @@
 
       calendarFetches.push(
         fetch(url, opts)
-          .then(function (response) {
-            return response.text();
-          })
+          .then((response) => response.data)
           .then((data) => {
             let parsedICS = ICAL.parse(data);
             let comp = new ICAL.Component(parsedICS);
@@ -313,7 +314,8 @@
         return {
           title: sanitize(newEvent.title),
           time: calculateTimeTitle(nowTimeInMs, newEvent),
-          symbol: newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-regular fa-calendar-check' : 'fa-solid fa-birthday-cake',
+          symbol:
+            newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-regular fa-calendar-check' : 'fa-solid fa-birthday-cake',
           opacity: opacity,
         };
       });
@@ -343,7 +345,7 @@
   {#each calendar.events as event}
     <tr class="normal bright" style:opacity={event.opacity}>
       <td class="symbol">
-        <i class="{event.symbol}" />
+        <i class={event.symbol} />
       </td>
       <td class="title">{@html event.title}</td>
       <td class="time light">{event.time}</td>

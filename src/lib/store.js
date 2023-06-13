@@ -1,4 +1,6 @@
 import { writable } from 'svelte/store';
+import { resolveResource } from '@tauri-apps/api/path';
+import { readTextFile } from '@tauri-apps/api/fs';
 
 export const store = writable({
   config: {
@@ -6,8 +8,9 @@ export const store = writable({
   },
 });
 
-fetch('config.json')
-  .then((response) => response.json())
+resolveResource('resources/config.json')
+  .then((resourceConfigPath) => readTextFile(resourceConfigPath))
+  .then((data) => JSON.parse(data))
   .then((config) => {
     config.loaded = true;
     store.set({ config: config });

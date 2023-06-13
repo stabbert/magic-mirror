@@ -5,6 +5,7 @@
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
+  import { fetch } from '@tauri-apps/api/http';
 
   let weather = {
     windSpeed: '',
@@ -48,8 +49,8 @@
     '&units=metric&lang=de';
 
   function updateWeather() {
-    fetch(openweatherUrl)
-      .then((response) => response.json())
+    fetch(openweatherUrl, { method: 'GET', responseType: 1 })
+      .then((response) => response.data)
       .then((data) => {
         let now = new Date();
         let sunrise = new Date(data.sys.sunrise * 1000);

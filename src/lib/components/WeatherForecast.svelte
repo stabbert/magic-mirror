@@ -3,6 +3,7 @@
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
+  import { fetch } from '@tauri-apps/api/http';
 
   let weatherForecast = {
     header: '',
@@ -55,8 +56,8 @@
     '&units=metric&lang=de';
 
   function updateWeatherForecast() {
-    fetch(openweatherUrl)
-      .then((response) => response.json())
+    fetch(openweatherUrl, { method: 'GET', responseType: 1 })
+      .then((response) => response.data)
       .then((data) => {
         let newForecasts = [];
         let lastDay = null;

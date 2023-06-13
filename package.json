@@ -6,12 +6,13 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "preview": "vite preview",
     "lint": "eslint --ext .js,.svelte --ignore-path .gitignore --fix src",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.0",
+    "@tauri-apps/api": "^1.4.0",
     "ical.js": "^1.5.0",
     "moment": "^2.29.4",
     "roboto-fontface": "^0.10.0",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.1",
+    "@tauri-apps/cli": "^1.4.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
