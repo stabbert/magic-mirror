@@ -16,7 +16,7 @@
       "fs": {
         "all": false,
         "readFile": true,
-        "scope": ["$RESOURCE/resources/config.json"]
+        "scope": ["$CONFIG/com.tauri.magicmirror/config.json"]
       },
       "http": {
         "all": false,
