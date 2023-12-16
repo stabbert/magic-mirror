@@ -81,7 +81,7 @@
 <div class="normal medium">
   <i class="wi wi-strong-wind dimmed" />
   <span>{weather.windSpeed}</span>
-  <i class="fa-solid fa-location-arrow" style="transform:rotate({weather.windDeg - 45}deg);" />
+  <i class="fa-solid fa-location-arrow" style="transform:rotate({weather.windDeg - 225}deg);" />
   <i class="wi dimmed {weather.sunriseSunsetIcon}" />
   <span>{weather.sunriseSunsetTime}</span>
 </div>
