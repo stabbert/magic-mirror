@@ -3,12 +3,12 @@
   import { onMount } from 'svelte';
   import { store } from '../store';
 
-  let clock = {
+  let clock = $state({
     date: '',
     hours: '',
     minutes: '',
     seconds: '',
-  };
+  });
 
   const language = $store.config.common.language;
 

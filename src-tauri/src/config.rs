@@ -1,8 +1,11 @@
 use std::fs;
 
-use tauri::PathResolver;
+use tauri::{
+    path::{BaseDirectory, PathResolver},
+    Wry,
+};
 
-pub fn create_default_config(path_resolver: PathResolver) {
+pub fn create_default_config(path_resolver: &PathResolver<Wry>) {
     let app_config_dir = path_resolver.app_config_dir().unwrap();
     let app_config_file = app_config_dir.join("config.json");
 
@@ -18,7 +21,9 @@ pub fn create_default_config(path_resolver: PathResolver) {
         );
     }
 
-    if let Some(default_app_config_file) = path_resolver.resolve_resource("resources/config.json") {
+    if let Ok(default_app_config_file) =
+        path_resolver.resolve("config.json", BaseDirectory::Resource)
+    {
         match fs::copy(default_app_config_file, app_config_file.clone()) {
             Ok(_) => println!(
                 "Magic mirror default config file successfully created: {:?}",

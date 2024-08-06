@@ -3,12 +3,12 @@
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
-  import { fetch } from '@tauri-apps/api/http';
+  import { fetch } from '@tauri-apps/plugin-http';
 
-  let weatherForecast = {
+  let weatherForecast = $state({
     header: '',
     forecasts: [],
-  };
+  });
 
   const iconTable = {
     '01d': 'wi-day-sunny',
@@ -56,8 +56,8 @@
     '&units=metric&lang=de';
 
   function updateWeatherForecast() {
-    fetch(openweatherUrl, { method: 'GET', responseType: 1 })
-      .then((response) => response.data)
+    fetch(openweatherUrl)
+      .then((response) => response.json())
       .then((data) => {
         let newForecasts = [];
         let lastDay = null;
@@ -157,18 +157,20 @@
 
 <header class="normal">{weatherForecast.header}</header>
 <table class="small">
-  {#each weatherForecast.forecasts as forecast}
-    <tr class="normal" style:opacity={forecast.opacity}>
-      <td class="bright day">{forecast.day}</td>
-      <td class="bright weather-icon">
-        <i class="wi {forecast.icon}" />
-      </td>
-      <td class="bright temperatur">
-        {forecast.maxTemp}&deg;C
-      </td>
-      <td class="temperatur">{forecast.minTemp}&deg;C</td>
-    </tr>
-  {/each}
+  <tbody>
+    {#each weatherForecast.forecasts as forecast}
+      <tr class="normal" style:opacity={forecast.opacity}>
+        <td class="bright day">{forecast.day}</td>
+        <td class="bright weather-icon">
+          <i class="wi {forecast.icon}"></i>
+        </td>
+        <td class="bright temperatur">
+          {forecast.maxTemp}&deg;C
+        </td>
+        <td class="temperatur">{forecast.minTemp}&deg;C</td>
+      </tr>
+    {/each}
+  </tbody>
 </table>
 
 <style>

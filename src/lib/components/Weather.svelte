@@ -5,16 +5,16 @@
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
-  import { fetch } from '@tauri-apps/api/http';
+  import { fetch } from '@tauri-apps/plugin-http';
 
-  let weather = {
+  let weather = $state({
     windSpeed: '',
     windDeg: 0,
     sunriseSunsetIcon: '',
     sunriseSunsetTime: '',
     weatherType: '',
     temperature: '',
-  };
+  });
 
   const iconTable = {
     '01d': 'wi-day-sunny',
@@ -49,10 +49,11 @@
     '&units=metric&lang=de';
 
   function updateWeather() {
-    fetch(openweatherUrl, { method: 'GET', responseType: 1 })
-      .then((response) => response.data)
+    fetch(openweatherUrl)
+      .then((response) => response.json())
       .then((data) => {
         let now = new Date();
+        
         let sunrise = new Date(data.sys.sunrise * 1000);
         let sunset = new Date(data.sys.sunset * 1000);
 
@@ -79,14 +80,14 @@
 </script>
 
 <div class="normal medium">
-  <i class="wi wi-strong-wind dimmed" />
+  <i class="wi wi-strong-wind dimmed"></i>
   <span>{weather.windSpeed}</span>
-  <i class="fa-solid fa-location-arrow" style="transform:rotate({weather.windDeg - 225}deg);" />
-  <i class="wi dimmed {weather.sunriseSunsetIcon}" />
+  <i class="fa-solid fa-location-arrow" style="transform:rotate({weather.windDeg - 225}deg);"></i>
+  <i class="wi dimmed {weather.sunriseSunsetIcon}"></i>
   <span>{weather.sunriseSunsetTime}</span>
 </div>
 <div class="large light">
-  <i class="wi weathericon {weather.weatherType}" />
+  <i class="wi weathericon {weather.weatherType}"></i>
   <span class="bright">{weather.temperature}&deg;C</span>
 </div>
 

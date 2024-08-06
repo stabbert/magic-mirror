@@ -1,0 +1,22 @@
+{
+  "identifier": "default",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "fs:allow-read-file",
+    {
+      "identifier": "fs:scope",
+      "allow": ["$CONFIG/com.tauri.magicmirror/config.json"]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://**/"
+        }
+      ]
+    },
+    "http:default",
+    "fs:default"
+  ]
+}

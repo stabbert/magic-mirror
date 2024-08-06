@@ -6,12 +6,12 @@
   import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
-  import { fetch } from '@tauri-apps/api/http';
+  import { fetch } from '@tauri-apps/plugin-http';
 
-  let calendar = {
+  let calendar = $state({
     header: '',
     events: [],
-  };
+  });
 
   // Define second, minute, hour, and day variables
   const oneSecondInMs = 1000; // 1,000 milliseconds
@@ -80,7 +80,7 @@
     }
   }
 
-  function uniq(array) {
+  function uniqe(array) {
     let result = [];
     let seen = new Set();
 
@@ -164,7 +164,6 @@
           'Content-Type': 'text/calendar; charset=UTF-8',
         },
         method: 'GET',
-        responseType: 2,
       };
 
       if (auth) {
@@ -176,8 +175,8 @@
       }
 
       calendarFetches.push(
-        fetch(url, opts)
-          .then((response) => response.data)
+        fetch(new Request(url, opts))
+          .then((response) => response.text())
           .then((data) => {
             let parsedICS = ICAL.parse(data);
             let comp = new ICAL.Component(parsedICS);
@@ -283,7 +282,7 @@
     }
 
     Promise.all(calendarFetches).then((allCalendarNewEvents) => {
-      let allNewEvents = uniq(
+      let allNewEvents = uniqe(
         allCalendarNewEvents.reduce(
           (allCalendarNewEvent, calendarNewEvent) => allCalendarNewEvent.concat(calendarNewEvent),
           [],
@@ -342,15 +341,17 @@
 
 <header class="normal">{calendar.header}</header>
 <table class="small">
-  {#each calendar.events as event}
-    <tr class="normal bright" style:opacity={event.opacity}>
-      <td class="symbol">
-        <i class={event.symbol} />
-      </td>
-      <td class="title">{@html event.title}</td>
-      <td class="time light">{event.time}</td>
-    </tr>
-  {/each}
+  <tbody>
+    {#each calendar.events as event}
+      <tr class="normal bright" style:opacity={event.opacity}>
+        <td class="symbol">
+          <i class={event.symbol}></i>
+        </td>
+        <td class="title">{@html event.title}</td>
+        <td class="time light">{event.time}</td>
+      </tr>
+    {/each}
+  </tbody>
 </table>
 
 <style>
@@ -360,15 +361,15 @@
   }
 
   .title {
+    box-orient: vertical;
     display: -webkit-box;
+    line-clamp: 2;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
     word-break: break-word;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
   }
 
   .time {
