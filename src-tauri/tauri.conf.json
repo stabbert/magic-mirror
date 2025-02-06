@@ -3,7 +3,7 @@
     "windows": [
       {
         "dragDropEnabled": false,
-        "fullscreen": false,
+        "fullscreen": true,
         "height": 1920,
         "resizable": true,
         "title": "Magic Mirror",
