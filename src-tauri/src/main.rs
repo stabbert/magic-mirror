@@ -11,6 +11,11 @@ fn main() {
         .plugin(tauri_plugin_http::init())
         .setup(|app| {
             config::create_default_config(app.path());
+
+            if let Some(window) = app.get_webview_window("main") {
+                window.set_cursor_visible(false).unwrap();
+            }
+
             Ok(())
         })
         .run(tauri::generate_context!())
