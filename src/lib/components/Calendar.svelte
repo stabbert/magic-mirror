@@ -361,15 +361,14 @@
   }
 
   .title {
-    box-orient: vertical;
     display: -webkit-box;
-    line-clamp: 2;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     overflow: hidden;
     text-align: center;
-    text-overflow: ellipsis;
     word-break: break-word;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   .time {
