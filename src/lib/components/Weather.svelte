@@ -53,7 +53,7 @@
       .then((response) => response.json())
       .then((data) => {
         let now = new Date();
-        
+
         let sunrise = new Date(data.sys.sunrise * 1000);
         let sunset = new Date(data.sys.sunset * 1000);
 
