@@ -5,9 +5,11 @@
     "core:default",
     "fs:allow-read-file",
     {
-      "identifier": "fs:scope",
-      "allow": ["$CONFIG/com.tauri.magicmirror/config.json"]
+      "identifier": "fs:read-files",
+      "allow": [{ "path": "$APPCONFIG/config.json" }]
     },
+    "fs:default",
+    "http:default",
     {
       "identifier": "http:default",
       "allow": [
@@ -15,8 +17,6 @@
           "url": "https://**/"
         }
       ]
-    },
-    "http:default",
-    "fs:default"
+    }
   ]
 }
