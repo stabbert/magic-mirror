@@ -40,11 +40,11 @@
   }
 
   .clock-item {
-    grid-area: clock;
+    grid-area: clock-start / clock-start / weather-end / weather-end;
   }
 
   .weather-item {
-    grid-area: weather;
+    grid-area: clock-start / clock-start / weather-end / weather-end;
     text-align: right;
   }
 
