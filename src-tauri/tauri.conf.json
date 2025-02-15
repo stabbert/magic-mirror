@@ -2,9 +2,7 @@
   "app": {
     "windows": [
       {
-        "alwaysOnTop": true,
         "dragDropEnabled": false,
-        "fullscreen": true,
         "height": 1920,
         "resizable": true,
         "title": "Magic Mirror",

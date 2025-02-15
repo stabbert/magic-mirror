@@ -56,15 +56,15 @@ jobs:
             PKG_CONFIG_PATH="/usr/lib/arm-linux-gnueabihf/pkgconfig/:${PKG_CONFIG_PATH}" \
             PKG_CONFIG_SYSROOT_DIR=/usr/arm-linux-gnueabihf/ \
             PATH="/root/.cargo/bin:$PATH"
-          
+
           WORKDIR /app
           EOF
-  
+
           docker build --tag debian/tauri-cross:arm-unknown-linux-gnueabihf .
 
           docker run --rm -i -v $PWD:/app \
             debian/tauri-cross:arm-unknown-linux-gnueabihf bash \
-            -c "npm ci && npm run tauri build -- --target arm-unknown-linux-gnueabihf"
+            -c "npm ci && npm run tauri build -- --config src-tauri/tauri.prod.conf.json --target arm-unknown-linux-gnueabihf"
 
       - name: Get app version
         run: echo "APP_VERSION=$(jq -r .version src-tauri/tauri.conf.json)" >> $GITHUB_ENV

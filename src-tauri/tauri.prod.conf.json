@@ -1,0 +1,11 @@
+{
+    "app": {
+      "windows": [
+        {
+          "alwaysOnTop": true,
+          "fullscreen": true
+        }
+      ]
+    }
+  }
+  
