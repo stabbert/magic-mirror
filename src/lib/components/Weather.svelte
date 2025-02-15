@@ -7,7 +7,10 @@
   import { store } from '../store';
   import { fetch } from '@tauri-apps/plugin-http';
 
-  let weather = $state({
+  const config = $store.config.weather;
+  const language = $store.config.common.language;
+
+  const weather = $state({
     windSpeed: '',
     windDeg: 0,
     sunriseSunsetIcon: '',
@@ -16,7 +19,7 @@
     temperature: '',
   });
 
-  const iconTable = {
+  const ICON_TABLE = {
     '01d': 'wi-day-sunny',
     '02d': 'wi-day-cloudy',
     '03d': 'wi-cloudy',
@@ -37,9 +40,15 @@
     '50n': 'wi-night-alt-cloudy-windy',
   };
 
-  const config = $store.config.weather;
+  const SUNSET_ICON = 'wi-sunset';
+  const SUNRISE_ICON = 'wi-sunrise';
 
-  let openweatherUrl =
+  const TIME_FORMAT = new Intl.DateTimeFormat(language, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const OPENWEATHER_URL =
     'https://api.openweathermap.org/data/2.5/weather?id=' +
     config.locationID +
     '&q=' +
@@ -49,23 +58,28 @@
     '&units=metric&lang=de';
 
   function updateWeather() {
-    fetch(openweatherUrl)
+    fetch(OPENWEATHER_URL)
       .then((response) => response.json())
       .then((data) => {
-        let now = new Date();
+        const now = Date.now();
+        const zero = 0;
+        const one = 1;
+        const thousand = 1000;
 
-        let sunrise = new Date(data.sys.sunrise * 1000);
-        let sunset = new Date(data.sys.sunset * 1000);
+        const sunrise = data.sys.sunrise * thousand;
+        const sunset = data.sys.sunset * thousand;
 
-        let sunriseSunsetDateObject = sunrise < now && sunset > now ? sunset : sunrise;
-        let sunriseSunsetTimeString = moment(sunriseSunsetDateObject).format('HH:mm');
+        const isSunset = sunrise < now && sunset > now;
 
-        weather.windSpeed = parseFloat(data.wind.speed).toFixed(0);
+        const sunriseSunsetDate = isSunset ? sunset : sunrise;
+        const sunriseSunsetTime = TIME_FORMAT.format(sunriseSunsetDate);
+
+        weather.windSpeed = parseFloat(data.wind.speed).toFixed(zero);
         weather.windDeg = data.wind.deg;
-        weather.sunriseSunsetIcon = sunrise < now && sunset > now ? 'wi-sunset' : 'wi-sunrise';
-        weather.sunriseSunsetTime = sunriseSunsetTimeString;
-        weather.weatherType = iconTable[data.weather[0].icon];
-        weather.temperature = parseFloat(data.main.temp).toFixed(1);
+        weather.sunriseSunsetIcon = isSunset ? SUNSET_ICON : SUNRISE_ICON;
+        weather.sunriseSunsetTime = sunriseSunsetTime;
+        weather.weatherType = ICON_TABLE[data.weather[zero].icon];
+        weather.temperature = parseFloat(data.main.temp).toFixed(one);
       })
       .catch((error) => window.console.error(error));
   }
@@ -94,6 +108,6 @@
 <style>
   .weathericon {
     font-size: 75%;
-    transform: translate(0, -3px);
+    transform: translate(0, -6px);
   }
 </style>
