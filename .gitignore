@@ -21,4 +21,7 @@ yarn-error.log*
 *.sln
 *.sw*
 
+# Tauri
+/src-tauri/gen/**
+
 /public/config*.json
