@@ -1,1 +1,0 @@
-{"default":{"identifier":"default","description":"","local":true,"windows":["main"],"permissions":["core:default","fs:allow-read-file",{"identifier":"fs:read-files","allow":[{"path":"$APPCONFIG/config.json"}]},"fs:default","http:default",{"identifier":"http:default","allow":[{"url":"https://**/"}]}]}}
