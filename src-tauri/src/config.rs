@@ -22,14 +22,14 @@ pub fn create_default_config(path_resolver: &PathResolver<Wry>) {
     }
 
     if let Ok(default_app_config_file) =
-        path_resolver.resolve("config.json", BaseDirectory::Resource)
+        path_resolver.resolve("resources/config.json", BaseDirectory::Resource)
     {
-        match fs::copy(default_app_config_file, app_config_file.clone()) {
+        match fs::copy(&default_app_config_file, &app_config_file) {
             Ok(_) => println!(
                 "Magic mirror default config file successfully created: {:?}",
                 app_config_file
             ),
-            Err(_) => panic!("Failed to create the default config file"),
+            Err(e) => panic!("Failed to create the default config file: {:?}", e),
         }
     }
 }
