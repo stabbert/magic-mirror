@@ -22,8 +22,6 @@
     numeric: 'auto',
     style: 'long',
   });
-  const RELATIVE_TIME_FORMAT_DAY_UNIT = 'day';
-  const RELATIVE_TIME_FORMAT_MINUTE_UNIT = 'minute';
 
   const WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT = new Intl.DateTimeFormat(language, {
     weekday: 'long',
@@ -31,12 +29,20 @@
     minute: '2-digit',
   });
 
-  // Define second, minute, hour, and day variables
+  const RELATIVE_TIME_FORMAT_MINUTE_UNIT = 'minute';
+  const RELATIVE_TIME_FORMAT_HOUR_UNIT = 'hour';
+  const RELATIVE_TIME_FORMAT_DAY_UNIT = 'day';
+  const RELATIVE_TIME_FORMAT_MONTH_UNIT = 'month';
+
   const ONE_SECOUND_IN_MS = 1000; // 1,000 milliseconds
   const ONE_MINUTE_IN_MS = ONE_SECOUND_IN_MS * 60;
   const ONE_HOUR_IN_MS = ONE_MINUTE_IN_MS * 60;
   const ONE_DAY_IN_MS = ONE_HOUR_IN_MS * 24;
   const TWO_DAY_IN_MS = ONE_DAY_IN_MS * 2;
+
+  const ONE_HOUR_IN_MINUTES = 60;
+  const ONE_DAY_IN_MINUTES = 1440;
+  const ONE_MONTH_IN_MINUTES = 43200;
 
   const sanitizeUnsafeXssCharacterReplacements = {
     '&': '&amp;',
@@ -61,16 +67,32 @@
     return event.duration.days > 0 ? true : false;
   }
 
-  function relativeTimeInDays(startTimeInMs, nowTimeInMs) {
-    const diffInMs = startTimeInMs - nowTimeInMs;
-    const days = Math.round(diffInMs / ONE_DAY_IN_MS);
-    return RELATIVE_TIME_FORMAT_ALWAYS.format(days, RELATIVE_TIME_FORMAT_DAY_UNIT);
-  }
+  function relativeTime(startTimeInMs, nowTimeInMs) {
+    const diffInMinutes = (startTimeInMs - nowTimeInMs) / ONE_MINUTE_IN_MS;
+    const diffInMinutesAbs = Math.abs(diffInMinutes);
 
-  function relativeTimeInMinutes(startTimeInMs, nowTimeInMs) {
-    const diffInMs = startTimeInMs - nowTimeInMs;
-    const days = Math.round(diffInMs / ONE_MINUTE_IN_MS);
-    return RELATIVE_TIME_FORMAT_ALWAYS.format(days, RELATIVE_TIME_FORMAT_MINUTE_UNIT);
+    if (diffInMinutesAbs < ONE_HOUR_IN_MINUTES) {
+      return RELATIVE_TIME_FORMAT_ALWAYS.format(diffInMinutes, RELATIVE_TIME_FORMAT_MINUTE_UNIT);
+    }
+
+    if (diffInMinutes < ONE_DAY_IN_MINUTES) {
+      return RELATIVE_TIME_FORMAT_ALWAYS.format(
+        Math.round(diffInMinutes / ONE_HOUR_IN_MINUTES),
+        RELATIVE_TIME_FORMAT_HOUR_UNIT,
+      );
+    }
+
+    if (diffInMinutes < ONE_MONTH_IN_MINUTES) {
+      return RELATIVE_TIME_FORMAT_ALWAYS.format(
+        Math.round(diffInMinutes / ONE_DAY_IN_MINUTES),
+        RELATIVE_TIME_FORMAT_DAY_UNIT,
+      );
+    }
+
+    return RELATIVE_TIME_FORMAT_ALWAYS.format(
+      Math.round(diffInMinutes / ONE_MONTH_IN_MINUTES),
+      RELATIVE_TIME_FORMAT_MONTH_UNIT,
+    );
   }
 
   function calculateTimeTitle(nowTimeInMs, newEvent) {
@@ -95,14 +117,14 @@
       } else {
         const startTimeInMsOnlyDate = startOfDayAsTimeInMs(newEvent.startTimeInMs);
         const nowTimeInMsOnlyDate = startOfDayAsTimeInMs(nowTimeInMs);
-        return capFirst(relativeTimeInDays(startTimeInMsOnlyDate, nowTimeInMsOnlyDate));
+        return capFirst(relativeTime(startTimeInMsOnlyDate, nowTimeInMsOnlyDate));
       }
     } else if (isAfter(newEvent.endTimeInMs, nowTimeInMs)) {
-      const relativeTimeInMinutes = relativeTimeInMinutes(newEvent.endTimeInMs, nowTimeInMs);
+      const relativeTimeInMinutes = relativeTime(newEvent.endTimeInMs, nowTimeInMs);
       const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substr(relativeTimeInMinutes.indexOf(' ') + 1);
       return 'Noch ' + relativeTimeInMinutesWithoutSuffix;
     } else {
-      return capFirst(relativeTimeInMinutes(newEvent.endTimeInMs, nowTimeInMs));
+      return capFirst(relativeTime(newEvent.endTimeInMs, nowTimeInMs));
     }
   }
 
