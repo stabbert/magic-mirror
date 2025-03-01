@@ -7,12 +7,8 @@
   const config = $store.config.weatherForecast;
   const language = $store.config.common.language;
 
-  const weatherForecast = $state({
-    header: '',
-    forecasts: [],
-  });
-
-  weatherForecast.header = config.header;
+  const header = config.header;
+  let weatherForecasts = $state([]);
 
   const ICON_TABLE = {
     '01d': 'wi-day-sunny',
@@ -36,7 +32,7 @@
   };
 
   /* Use the parse to keep the same struct between daily and forecast Endpoint from Openweather */
-  function parserDataWeather(data) {
+  function parseWeatherForecast(data) {
     if (Object.prototype.hasOwnProperty.call(data, 'main')) {
       data['temp'] = { min: data.main.temp_min, max: data.main.temp_max };
     }
@@ -61,60 +57,60 @@
         const zero = 0;
         const one = 1;
         const thousand = 1000;
-        const newForecasts = [];
-        let forecastData = {};
+        const newWeatherForecasts = [];
+        let weatherForecastData = {};
         let lastDay = null;
         let duplicateIcons = {};
         let highestOccurrenceIconCount = zero;
 
         for (let index in data.list) {
-          let forecast = data.list[index];
+          let weatherForecast = data.list[index];
 
-          parserDataWeather(forecast); // hack issue #1017
+          parseWeatherForecast(weatherForecast);
 
-          const forecastDate = new Date(forecast.dt * thousand)
-          const day = DATE_FORMAT.format(forecastDate);
+          const weatherForecastDate = new Date(weatherForecast.dt * thousand);
+          const day = DATE_FORMAT.format(weatherForecastDate);
 
           if (day === lastDay) {
-            //Log.log("Compare max: ", forecast.temp.max, parseFloat(forecastData.maxTemp));
-            forecastData.maxTemp =
-              forecast.temp.max > parseFloat(forecastData.maxTemp)
-                ? parseFloat(forecast.temp.max).toFixed(one)
-                : forecastData.maxTemp;
-            //Log.log("Compare min: ", forecast.temp.min, parseFloat(forecastData.minTemp));
-            forecastData.minTemp =
-              forecast.temp.min < parseFloat(forecastData.minTemp)
-                ? parseFloat(forecast.temp.min).toFixed(one)
-                : forecastData.minTemp;
+            //Log.log("Compare max: ", forecast.temp.max, parseFloat(weatherForecastData.maxTemp));
+            weatherForecastData.maxTemp =
+              weatherForecast.temp.max > parseFloat(weatherForecastData.maxTemp)
+                ? parseFloat(weatherForecast.temp.max).toFixed(one)
+                : weatherForecastData.maxTemp;
+            //Log.log("Compare min: ", forecast.temp.min, parseFloat(weatherForecastData.minTemp));
+            weatherForecastData.minTemp =
+              weatherForecast.temp.min < parseFloat(weatherForecastData.minTemp)
+                ? parseFloat(weatherForecast.temp.min).toFixed(one)
+                : weatherForecastData.minTemp;
 
             // Since we don't want an icon from the start of the day (in the middle of the night)
             // we update the icon as long as it's somewhere during the day with the highest occurrence.
-            const hour = forecastDate.getHours();
+            const hour = weatherForecastDate.getHours();
             if (hour >= 8 && hour <= 18) {
-              const icon = ICON_TABLE[forecast.weather[zero].icon];
+              const icon = ICON_TABLE[weatherForecast.weather[zero].icon];
               const duplicateIconCount = duplicateIcons[icon] + one || one;
               duplicateIcons[icon] = duplicateIconCount;
               if (highestOccurrenceIconCount <= duplicateIconCount) {
-                forecastData.icon = icon;
+                weatherForecast.icon = icon;
                 highestOccurrenceIconCount = duplicateIconCount;
               }
             }
           } else {
             // Stop processing when maxNumberOfDays is reached
-            if (forecast.length === config.maxNumberOfDays) {
+            if (weatherForecast.length === config.maxNumberOfDays) {
               break;
             }
 
-            const icon = ICON_TABLE[forecast.weather[zero].icon];
+            const icon = ICON_TABLE[weatherForecast.weather[zero].icon];
 
-            forecastData = {
+            weatherForecastData = {
               day: day,
               icon: icon,
-              maxTemp: parseFloat(forecast.temp.max).toFixed(one),
-              minTemp: parseFloat(forecast.temp.min).toFixed(one),
+              maxTemp: parseFloat(weatherForecast.temp.max).toFixed(one),
+              minTemp: parseFloat(weatherForecast.temp.min).toFixed(one),
             };
 
-            newForecasts.push(forecastData);
+            newWeatherForecasts.push(weatherForecastData);
 
             lastDay = day;
 
@@ -124,27 +120,27 @@
           }
         }
 
-        const newForecastsSize = newForecasts.length;
-        for (let index = zero; index < newForecastsSize; index++) {
-          let newForecast = newForecasts[index];
+        const newWeatherForecastsSize = newWeatherForecasts.length;
+        for (let index = zero; index < newWeatherForecastsSize; index++) {
+          let newWeatherForecast = newWeatherForecasts[index];
           let opacity = one;
 
           if (config.fade && config.fadePoint < one) {
             if (config.fadePoint < zero) {
               config.fadePoint = zero;
             }
-            let startingPoint = newForecastsSize * config.fadePoint;
-            let steps = newForecastsSize - startingPoint;
+            let startingPoint = newWeatherForecastsSize * config.fadePoint;
+            let steps = newWeatherForecastsSize - startingPoint;
             if (index >= startingPoint) {
               let currentStep = index - startingPoint;
               opacity = one - (one / steps) * currentStep;
             }
           }
 
-          newForecast.opacity = opacity;
+          newWeatherForecast.opacity = opacity;
         }
 
-        weatherForecast.forecasts = newForecasts;
+        weatherForecasts = newWeatherForecasts;
       })
       .catch((error) => window.console.error(error));
   }
@@ -158,10 +154,10 @@
   });
 </script>
 
-<header class="normal">{weatherForecast.header}</header>
+<header class="normal">{header}</header>
 <table class="small">
   <tbody>
-    {#each weatherForecast.forecasts as forecast}
+    {#each weatherForecasts as forecast}
       <tr class="normal" style:opacity={forecast.opacity}>
         <td class="bright day">{forecast.day}</td>
         <td class="bright weather-icon">
