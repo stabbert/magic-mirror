@@ -2,7 +2,6 @@
   import '../../../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css';
   import '../../../node_modules/@fortawesome/fontawesome-free/css/solid.min.css';
   import '../../../node_modules/weathericons/css/weather-icons.min.css';
-  import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
   import { fetch } from '@tauri-apps/plugin-http';
