@@ -3,23 +3,40 @@
   import '../../../node_modules/@fortawesome/fontawesome-free/css/regular.min.css';
   import '../../../node_modules/@fortawesome/fontawesome-free/css/solid.min.css';
   import ICAL from 'ical.js';
-  import moment from 'moment/min/moment-with-locales';
   import { onMount } from 'svelte';
   import { store } from '../store';
   import { fetch } from '@tauri-apps/plugin-http';
 
   const config = $store.config.calendar;
-
+  const language = $store.config.language;
   const header = config.header;
 
   let calendarEvents = $state([]);
 
+  const RELATIVE_TIME_FORMAT_ALWAYS = new Intl.RelativeTimeFormat(language, {
+    numeric: 'always',
+    style: 'long',
+  });
+
+  const RELATIVE_TIME_FORMAT_AUTO = new Intl.RelativeTimeFormat(language, {
+    numeric: 'auto',
+    style: 'long',
+  });
+  const RELATIVE_TIME_FORMAT_DAY_UNIT = 'day';
+  const RELATIVE_TIME_FORMAT_MINUTE_UNIT = 'minute';
+
+  const WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT = new Intl.DateTimeFormat(language, {
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
   // Define second, minute, hour, and day variables
-  const oneSecondInMs = 1000; // 1,000 milliseconds
-  const oneMinuteInMs = oneSecondInMs * 60;
-  const oneHourInMs = oneMinuteInMs * 60;
-  const oneDayInMs = oneHourInMs * 24;
-  const twoDayInMs = oneDayInMs * 2;
+  const ONE_SECOUND_IN_MS = 1000; // 1,000 milliseconds
+  const ONE_MINUTE_IN_MS = ONE_SECOUND_IN_MS * 60;
+  const ONE_HOUR_IN_MS = ONE_MINUTE_IN_MS * 60;
+  const ONE_DAY_IN_MS = ONE_HOUR_IN_MS * 24;
+  const TWO_DAY_IN_MS = ONE_DAY_IN_MS * 2;
 
   const sanitizeUnsafeXssCharacterReplacements = {
     '&': '&amp;',
@@ -44,40 +61,48 @@
     return event.duration.days > 0 ? true : false;
   }
 
+  function relativeTimeInDays(startTimeInMs, nowTimeInMs) {
+    const diffInMs = startTimeInMs - nowTimeInMs;
+    const days = Math.round(diffInMs / ONE_DAY_IN_MS);
+    return RELATIVE_TIME_FORMAT_ALWAYS.format(days, RELATIVE_TIME_FORMAT_DAY_UNIT);
+  }
+
+  function relativeTimeInMinutes(startTimeInMs, nowTimeInMs) {
+    const diffInMs = startTimeInMs - nowTimeInMs;
+    const days = Math.round(diffInMs / ONE_MINUTE_IN_MS);
+    return RELATIVE_TIME_FORMAT_ALWAYS.format(days, RELATIVE_TIME_FORMAT_MINUTE_UNIT);
+  }
+
   function calculateTimeTitle(nowTimeInMs, newEvent) {
     if (newEvent.fullDayEvent) {
-      const startTimeInMsOnlyDate = startOfDayAsTimeInMs(newEvent.startTimeInMs);
-      const endTimeInMsOnlyDate = startOfDayAsTimeInMs(newEvent.endTimeInMs);
-      if (isSame(newEvent.startTimeInMs, startTimeInMsOnlyDate) && isSame(newEvent.endTimeInMs, endTimeInMsOnlyDate)) {
-        const nowTimeInMsOnlyDate = startOfDayAsTimeInMs(nowTimeInMs);
-        if (isSame(startTimeInMsOnlyDate, nowTimeInMsOnlyDate)) {
-          return 'Heute';
-        } else {
-          const diffInMs = newEvent.startTimeInMs - nowTimeInMs;
-          if (diffInMs > 0) {
-            if (diffInMs < oneDayInMs) {
-              return 'Morgen';
-            } else if (diffInMs < twoDayInMs) {
-              return 'Übermorgen';
-            }
-          }
-        }
+      const diffInMs = newEvent.startTimeInMs - nowTimeInMs;
+
+      if (diffInMs < TWO_DAY_IN_MS) {
+        const days = Math.round(diffInMs / ONE_DAY_IN_MS);
+        return RELATIVE_TIME_FORMAT_AUTO.format(days, RELATIVE_TIME_FORMAT_DAY_UNIT);
       }
     }
 
     if (isAfter(newEvent.startTimeInMs, nowTimeInMs)) {
       const diffInMs = newEvent.startTimeInMs - nowTimeInMs;
-      if (diffInMs < twoDayInMs) {
-        return capFirst(moment(newEvent.startTimeInMs).calendar());
+      if (diffInMs < ONE_DAY_IN_MS) {
+        const weekdayWithHourAndMinute = WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT.format(newEvent.startTimeInMs);
+        const onlyHourAndMinute = weekdayWithHourAndMinute.substring(weekdayWithHourAndMinute.indexOf(",") + 1);
+        return "Morgen um" + onlyHourAndMinute + " Uhr";  
+      } else if (diffInMs < TWO_DAY_IN_MS) {
+        const weekdayWithHourAndMinute = WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT.format(newEvent.startTimeInMs);
+        return weekdayWithHourAndMinute.replace(",", " um") + " Uhr"
       } else {
         const startTimeInMsOnlyDate = startOfDayAsTimeInMs(newEvent.startTimeInMs);
         const nowTimeInMsOnlyDate = startOfDayAsTimeInMs(nowTimeInMs);
-        return capFirst(moment(startTimeInMsOnlyDate).from(nowTimeInMsOnlyDate));
+        return capFirst(relativeTimeInDays(startTimeInMsOnlyDate, nowTimeInMsOnlyDate));
       }
     } else if (isAfter(newEvent.endTimeInMs, nowTimeInMs)) {
-      return 'Noch ' + moment(newEvent.endTimeInMs).from(nowTimeInMs, true);
+      const relativeTimeInMinutes = relativeTimeInMinutes(newEvent.endTimeInMs, nowTimeInMs)
+      const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substr(relativeTimeInMinutes.indexOf(" ") + 1);
+      return 'Noch ' + relativeTimeInMinutesWithoutSuffix;
     } else {
-      return capFirst(moment(newEvent.endTimeInMs).from(nowTimeInMs));
+      return capFirst(relativeTimeInMinutes(newEvent.endTimeInMs, nowTimeInMs));
     }
   }
 
@@ -133,10 +158,6 @@
     const next = rule.next();
     return next && toTimeInMs(next);
   }
-
-  moment.updateLocale($store.config.common.language, {
-    longDateFormat: { LT: 'HH:mm' },
-  });
 
   let updateTimeInAllEventsIntervalId;
 
@@ -323,7 +344,7 @@
         });
       }
 
-      updateTimeInAllEventsIntervalId = setInterval(updateTimeInAllEvents, oneMinuteInMs);
+      updateTimeInAllEventsIntervalId = setInterval(updateTimeInAllEvents, ONE_MINUTE_IN_MS);
     });
   }
 
