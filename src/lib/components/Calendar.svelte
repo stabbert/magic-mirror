@@ -87,39 +87,23 @@
       const diffInMs = newEvent.startTimeInMs - nowTimeInMs;
       if (diffInMs < ONE_DAY_IN_MS) {
         const weekdayWithHourAndMinute = WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT.format(newEvent.startTimeInMs);
-        const onlyHourAndMinute = weekdayWithHourAndMinute.substring(weekdayWithHourAndMinute.indexOf(",") + 1);
-        return "Morgen um" + onlyHourAndMinute + " Uhr";  
+        const onlyHourAndMinute = weekdayWithHourAndMinute.substring(weekdayWithHourAndMinute.indexOf(',') + 1);
+        return 'Morgen um' + onlyHourAndMinute + ' Uhr';
       } else if (diffInMs < TWO_DAY_IN_MS) {
         const weekdayWithHourAndMinute = WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT.format(newEvent.startTimeInMs);
-        return weekdayWithHourAndMinute.replace(",", " um") + " Uhr"
+        return weekdayWithHourAndMinute.replace(',', ' um') + ' Uhr';
       } else {
         const startTimeInMsOnlyDate = startOfDayAsTimeInMs(newEvent.startTimeInMs);
         const nowTimeInMsOnlyDate = startOfDayAsTimeInMs(nowTimeInMs);
         return capFirst(relativeTimeInDays(startTimeInMsOnlyDate, nowTimeInMsOnlyDate));
       }
     } else if (isAfter(newEvent.endTimeInMs, nowTimeInMs)) {
-      const relativeTimeInMinutes = relativeTimeInMinutes(newEvent.endTimeInMs, nowTimeInMs)
-      const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substr(relativeTimeInMinutes.indexOf(" ") + 1);
+      const relativeTimeInMinutes = relativeTimeInMinutes(newEvent.endTimeInMs, nowTimeInMs);
+      const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substr(relativeTimeInMinutes.indexOf(' ') + 1);
       return 'Noch ' + relativeTimeInMinutesWithoutSuffix;
     } else {
       return capFirst(relativeTimeInMinutes(newEvent.endTimeInMs, nowTimeInMs));
     }
-  }
-
-  function uniqe(array) {
-    let result = [];
-    let seen = new Set();
-
-    outer: for (let index = 0; index < array.length; index++) {
-      let value = array[index];
-      if (seen.has(value)) {
-        continue outer;
-      }
-      seen.add(value);
-      result.push(value);
-    }
-
-    return result;
   }
 
   function isBefore(timeInMsOne, timeInMsTwo) {
@@ -159,24 +143,18 @@
     return next && toTimeInMs(next);
   }
 
-  let updateTimeInAllEventsIntervalId;
-
   function updateCalendar() {
-    if (updateTimeInAllEventsIntervalId) {
-      clearInterval(updateTimeInAllEventsIntervalId);
-    }
-
     const nowTimeInMs = Date.now();
     const todayTimeInMs = startOfDayAsTimeInMs(nowTimeInMs);
     const futureTimeInMs = addDaysAsTimeInMs(nowTimeInMs, config.maximumNumberOfDays) - 1000; // Subtract 1 second so that events that start on the middle of the night will not repeat.
 
-    let calendarFetches = [];
+    const calendarFetches = [];
 
     for (let calendar of config.calendars) {
-      let url = calendar.url.replace('webcal://', 'https://');
-      let auth = calendar.auth;
+      const url = calendar.url.replace('webcal://', 'https://');
+      const auth = calendar.auth;
 
-      let opts = {
+      const opts = {
         headers: {
           'Access-Control-Allow-Origin': url,
           'Content-Type': 'text/calendar; charset=UTF-8',
@@ -196,14 +174,15 @@
         fetch(new Request(url, opts))
           .then((response) => response.text())
           .then((data) => {
-            let parsedICS = ICAL.parse(data);
-            let comp = new ICAL.Component(parsedICS);
-            let allComp = comp.getAllSubcomponents();
-            let newEvents = [];
-            let shiftedRecurrenceEventMap = {};
+            const parsedICS = ICAL.parse(data);
+            const component = new ICAL.Component(parsedICS);
+            const allSubcomponents = component.getAllSubcomponents();
+            const newEvents = [];
+            const shiftedRecurrenceEventMap = {};
 
-            for (let index in allComp) {
-              let vevent = allComp[index];
+            const allSubcomponentsSize = allSubcomponents.length;
+            for (let index = 0; index < allSubcomponentsSize; index++) {
+              let vevent = allSubcomponents[index];
               let event = new ICAL.Event(vevent);
 
               if (event.recurrenceId) {
@@ -293,6 +272,12 @@
               }
             }
 
+            newEvents.sort(function (a, b) {
+              return a.startTimeInMs - b.startTimeInMs;
+            });
+
+            newEvents.splice(config.maximumEntries);
+
             return newEvents;
           })
           .catch((error) => window.console.error(error)),
@@ -300,60 +285,75 @@
     }
 
     Promise.all(calendarFetches).then((allCalendarNewEvents) => {
-      let allNewEvents = uniqe(
-        allCalendarNewEvents.reduce(
-          (allCalendarNewEvent, calendarNewEvent) => allCalendarNewEvent.concat(calendarNewEvent),
-          [],
-        ),
-      );
+      const allNewEvents = [];
+
+      const allCalendarNewEventsSize = allCalendarNewEvents.length;
+      for (let allIndex = 0; allIndex < allCalendarNewEventsSize; allIndex++) {
+        const calendarNewEvents = allCalendarNewEvents[allIndex];
+
+        const calendarNewEventsSize = calendarNewEvents.length;
+        for (let index = 0; index < calendarNewEventsSize; index++) {
+          const calendarNewEvent = calendarNewEvents[index];
+          allNewEvents.push(calendarNewEvent);
+        }
+      }
+
+      allCalendarNewEvents = null;
 
       allNewEvents.sort(function (a, b) {
         return a.startTimeInMs - b.startTimeInMs;
       });
 
-      let maximumAllNewEvents = allNewEvents.slice(0, config.maximumEntries);
+      allNewEvents.splice(config.maximumEntries);
 
-      calendarEvents = maximumAllNewEvents.map((newEvent, index) => {
+      const allNewEventsSize = allNewEvents.length;
+      for (let index = 0; index < allNewEventsSize; index++) {
+        const newEvent = allNewEvents[index];
+
         let opacity = 1;
 
         if (config.fade && config.fadePoint < 1) {
           if (config.fadePoint < 0) {
             config.fadePoint = 0;
           }
-          let startingPoint = maximumAllNewEvents.length * config.fadePoint;
-          let steps = maximumAllNewEvents.length - startingPoint;
+          let startingPoint = allNewEventsSize * config.fadePoint;
+          let steps = allNewEventsSize - startingPoint;
           if (index >= startingPoint) {
             let currentStep = index - startingPoint;
             opacity = 1 - (1 / steps) * currentStep;
           }
         }
 
-        return {
-          title: sanitize(newEvent.title),
-          time: calculateTimeTitle(nowTimeInMs, newEvent),
-          symbol:
-            newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-regular fa-calendar-check' : 'fa-solid fa-birthday-cake',
-          opacity: opacity,
-        };
-      });
-
-      function updateTimeInAllEvents() {
-        const nowTimeInMs = Date.now();
-        maximumAllNewEvents.forEach((newEvent, index) => {
-          calendarEvents[index].time = calculateTimeTitle(nowTimeInMs, newEvent);
-        });
+        newEvent.title = sanitize(newEvent.title);
+        newEvent.time = calculateTimeTitle(nowTimeInMs, newEvent);
+        newEvent.symbol =
+          newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-regular fa-calendar-check' : 'fa-solid fa-birthday-cake';
+        newEvent.opacity = opacity;
       }
 
-      updateTimeInAllEventsIntervalId = setInterval(updateTimeInAllEvents, ONE_MINUTE_IN_MS);
+      calendarEvents = allNewEvents;
     });
+  }
+
+  function updateTimeInAllEvents() {
+    const nowTimeInMs = Date.now();
+    const calendarEventsSize = calendarEvents.length;
+    for (let index = 0; index < calendarEventsSize; index++) {
+      const calendarEvent = calendarEvents[index];
+      calendarEvents[index].time = calculateTimeTitle(nowTimeInMs, calendarEvent);
+    }
   }
 
   onMount(() => {
     updateCalendar();
 
-    const interval = setInterval(updateCalendar, config.updateIntervall);
+    const updateCalendarIntervalId = setInterval(updateCalendar, config.updateIntervall);
+    const updateTimeInAllEventsIntervalId = setInterval(updateTimeInAllEvents, ONE_MINUTE_IN_MS);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(updateCalendarIntervalId);
+      clearInterval(updateTimeInAllEventsIntervalId);
+    };
   });
 </script>
 
