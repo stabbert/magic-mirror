@@ -8,10 +8,11 @@
   import { store } from '../store';
   import { fetch } from '@tauri-apps/plugin-http';
 
-  let calendar = $state({
-    header: '',
-    events: [],
-  });
+  const config = $store.config.calendar;
+
+  const header = config.header;
+
+  let calendarEvents = $state([]);
 
   // Define second, minute, hour, and day variables
   const oneSecondInMs = 1000; // 1,000 milliseconds
@@ -132,10 +133,6 @@
     const next = rule.next();
     return next && toTimeInMs(next);
   }
-
-  const config = $store.config.calendar;
-
-  calendar.header = config.header;
 
   moment.updateLocale($store.config.common.language, {
     longDateFormat: { LT: 'HH:mm' },
@@ -295,7 +292,7 @@
 
       let maximumAllNewEvents = allNewEvents.slice(0, config.maximumEntries);
 
-      calendar.events = maximumAllNewEvents.map((newEvent, index) => {
+      calendarEvents = maximumAllNewEvents.map((newEvent, index) => {
         let opacity = 1;
 
         if (config.fade && config.fadePoint < 1) {
@@ -322,7 +319,7 @@
       function updateTimeInAllEvents() {
         const nowTimeInMs = Date.now();
         maximumAllNewEvents.forEach((newEvent, index) => {
-          calendar.events[index].time = calculateTimeTitle(nowTimeInMs, newEvent);
+          calendarEvents[index].time = calculateTimeTitle(nowTimeInMs, newEvent);
         });
       }
 
@@ -339,10 +336,10 @@
   });
 </script>
 
-<header class="normal">{calendar.header}</header>
+<header class="normal">{header}</header>
 <table class="small">
   <tbody>
-    {#each calendar.events as event}
+    {#each calendarEvents as event}
       <tr class="normal bright" style:opacity={event.opacity}>
         <td class="symbol">
           <i class={event.symbol}></i>
