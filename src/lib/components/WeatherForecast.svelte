@@ -72,12 +72,10 @@
           const day = DATE_FORMAT.format(weatherForecastDate);
 
           if (day === lastDay) {
-            //Log.log("Compare max: ", forecast.temp.max, parseFloat(weatherForecastData.maxTemp));
             weatherForecastData.maxTemp =
               weatherForecast.temp.max > parseFloat(weatherForecastData.maxTemp)
                 ? parseFloat(weatherForecast.temp.max).toFixed(one)
                 : weatherForecastData.maxTemp;
-            //Log.log("Compare min: ", forecast.temp.min, parseFloat(weatherForecastData.minTemp));
             weatherForecastData.minTemp =
               weatherForecast.temp.min < parseFloat(weatherForecastData.minTemp)
                 ? parseFloat(weatherForecast.temp.min).toFixed(one)
@@ -148,9 +146,9 @@
   onMount(() => {
     updateWeatherForecast();
 
-    const interval = setInterval(updateWeatherForecast, config.updateIntervall);
+    const intervalId = setInterval(updateWeatherForecast, config.updateIntervall);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalId);
   });
 </script>
 

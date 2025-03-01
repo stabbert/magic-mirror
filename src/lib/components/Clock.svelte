@@ -55,9 +55,9 @@
   onMount(() => {
     updateClock();
 
-    const interval = setInterval(updateClock, 1000);
+    const intervalId = setInterval(updateClock, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalId);
   });
 </script>
 

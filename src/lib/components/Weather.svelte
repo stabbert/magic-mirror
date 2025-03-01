@@ -10,12 +10,12 @@
   const language = $store.config.common.language;
 
   const weather = $state({
-    windSpeed: '',
-    windDeg: 0,
     sunriseSunsetIcon: '',
     sunriseSunsetTime: '',
-    weatherType: '',
     temperature: '',
+    weatherType: '',
+    windDeg: 0,
+    windSpeed: '',
   });
 
   const ICON_TABLE = {
@@ -73,12 +73,12 @@
         const sunriseSunsetDate = isSunset ? sunset : sunrise;
         const sunriseSunsetTime = TIME_FORMAT.format(sunriseSunsetDate);
 
-        weather.windSpeed = parseFloat(data.wind.speed).toFixed(zero);
-        weather.windDeg = data.wind.deg;
         weather.sunriseSunsetIcon = isSunset ? SUNSET_ICON : SUNRISE_ICON;
         weather.sunriseSunsetTime = sunriseSunsetTime;
-        weather.weatherType = ICON_TABLE[data.weather[zero].icon];
         weather.temperature = parseFloat(data.main.temp).toFixed(one);
+        weather.weatherType = ICON_TABLE[data.weather[zero].icon];
+        weather.windDeg = data.wind.deg;
+        weather.windSpeed = parseFloat(data.wind.speed).toFixed(zero);
       })
       .catch((error) => window.console.error(error));
   }
@@ -86,9 +86,9 @@
   onMount(() => {
     updateWeather();
 
-    const interval = setInterval(updateWeather, config.updateIntervall);
+    const intervalId = setInterval(updateWeather, config.updateIntervall);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalId);
   });
 </script>
 
