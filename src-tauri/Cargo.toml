@@ -6,8 +6,8 @@ authors = ["stabbert"]
 license = "MIT"
 repository = "https://github.com/stabbert/magic-mirror"
 default-run = "magic-mirror-app"
-edition = "2021"
-rust-version = "1.84.1"
+edition = "2024"
+rust-version = "1.85.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
