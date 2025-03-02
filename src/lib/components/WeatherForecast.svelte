@@ -63,7 +63,8 @@
         let duplicateIcons = {};
         let highestOccurrenceIconCount = zero;
 
-        for (let index in data.list) {
+        const dataListSize = data.list.length;
+        for (let index = 0; index < dataListSize; index++) {
           let weatherForecast = data.list[index];
 
           parseWeatherForecast(weatherForecast);
@@ -89,7 +90,7 @@
               const duplicateIconCount = duplicateIcons[icon] + one || one;
               duplicateIcons[icon] = duplicateIconCount;
               if (highestOccurrenceIconCount <= duplicateIconCount) {
-                weatherForecast.icon = icon;
+                weatherForecastData.icon = icon;
                 highestOccurrenceIconCount = duplicateIconCount;
               }
             }
@@ -155,16 +156,16 @@
 <header class="normal">{header}</header>
 <table class="small">
   <tbody>
-    {#each weatherForecasts as forecast}
-      <tr class="normal" style:opacity={forecast.opacity}>
-        <td class="bright day">{forecast.day}</td>
+    {#each weatherForecasts as weatherForecast}
+      <tr class="normal" style:opacity={weatherForecast.opacity}>
+        <td class="bright day">{weatherForecast.day}</td>
         <td class="bright weather-icon">
-          <i class="wi {forecast.icon}"></i>
+          <i class="wi {weatherForecast.icon}"></i>
         </td>
         <td class="bright temperatur">
-          {forecast.maxTemp}&deg;C
+          {weatherForecast.maxTemp}&deg;C
         </td>
-        <td class="temperatur">{forecast.minTemp}&deg;C</td>
+        <td class="temperatur">{weatherForecast.minTemp}&deg;C</td>
       </tr>
     {/each}
   </tbody>
