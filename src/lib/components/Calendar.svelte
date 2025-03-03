@@ -23,10 +23,13 @@
     style: 'long',
   });
 
-  const WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT = new Intl.DateTimeFormat(language, {
-    weekday: 'long',
+  const HOUR_AND_MINUTE_FORMAT = new Intl.DateTimeFormat(language, {
     hour: '2-digit',
     minute: '2-digit',
+  });
+
+  const WEEKDAY_FORMAT = new Intl.DateTimeFormat(language, {
+    weekday: 'long',
   });
 
   const RELATIVE_TIME_FORMAT_MINUTE_UNIT = 'minute';
@@ -59,7 +62,7 @@
     return string.replace(sanitizeUnsafeXssCharactersRegExp, (match) => sanitizeUnsafeXssCharacterReplacements[match]);
   }
 
-  function capFirst(string) {
+  function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
@@ -95,36 +98,43 @@
     );
   }
 
+  function formatAtTime(startTimeInMs) {
+    return 'um ' + HOUR_AND_MINUTE_FORMAT.format(startTimeInMs) + ' Uhr';
+  }
+
   function calculateTimeTitle(nowTimeInMs, newEvent) {
+    const startTimeInMs = newEvent.startTimeInMs;
+    const endTimeInMs = newEvent.endTimeInMs;
+
     if (newEvent.fullDayEvent) {
-      const diffInMs = newEvent.startTimeInMs - nowTimeInMs;
+      const diffInMs = startTimeInMs - nowTimeInMs;
 
       if (diffInMs < TWO_DAY_IN_MS) {
         const days = Math.round(diffInMs / ONE_DAY_IN_MS);
-        return RELATIVE_TIME_FORMAT_AUTO.format(days, RELATIVE_TIME_FORMAT_DAY_UNIT);
+        return capitalizeFirstLetter(RELATIVE_TIME_FORMAT_AUTO.format(days, RELATIVE_TIME_FORMAT_DAY_UNIT));
       }
     }
 
-    if (isAfter(newEvent.startTimeInMs, nowTimeInMs)) {
-      const diffInMs = newEvent.startTimeInMs - nowTimeInMs;
-      if (diffInMs < ONE_DAY_IN_MS) {
-        const weekdayWithHourAndMinute = WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT.format(newEvent.startTimeInMs);
-        const onlyHourAndMinute = weekdayWithHourAndMinute.substring(weekdayWithHourAndMinute.indexOf(',') + 1);
-        return 'Morgen um' + onlyHourAndMinute + ' Uhr';
-      } else if (diffInMs < TWO_DAY_IN_MS) {
-        const weekdayWithHourAndMinute = WEEKDAY_WITH_HOUR_AND_MINUTE_FORMAT.format(newEvent.startTimeInMs);
-        return weekdayWithHourAndMinute.replace(',', ' um') + ' Uhr';
+    if (isAfter(startTimeInMs, nowTimeInMs)) {
+      const startTimeInMsOnlyDate = startOfDayAsTimeInMs(startTimeInMs);
+      const nowTimeInMsOnlyDate = startOfDayAsTimeInMs(nowTimeInMs);
+      const diffInMs = startTimeInMsOnlyDate - nowTimeInMsOnlyDate;
+
+      if (diffInMs === 0) {
+        return 'Heute ' + formatAtTime(startTimeInMs);
+      } else if (diffInMs === ONE_DAY_IN_MS) {
+        return 'Morgen ' + formatAtTime(startTimeInMs);
+      } else if (diffInMs === TWO_DAY_IN_MS) {
+        return WEEKDAY_FORMAT.format(startTimeInMs) + ' ' + formatAtTime(startTimeInMs);
       } else {
-        const startTimeInMsOnlyDate = startOfDayAsTimeInMs(newEvent.startTimeInMs);
-        const nowTimeInMsOnlyDate = startOfDayAsTimeInMs(nowTimeInMs);
-        return capFirst(relativeTime(startTimeInMsOnlyDate, nowTimeInMsOnlyDate));
+        return capitalizeFirstLetter(relativeTime(startTimeInMsOnlyDate, nowTimeInMsOnlyDate));
       }
-    } else if (isAfter(newEvent.endTimeInMs, nowTimeInMs)) {
-      const relativeTimeInMinutes = relativeTime(newEvent.endTimeInMs, nowTimeInMs);
+    } else if (isAfter(endTimeInMs, nowTimeInMs)) {
+      const relativeTimeInMinutes = relativeTime(endTimeInMs, nowTimeInMs);
       const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substr(relativeTimeInMinutes.indexOf(' ') + 1);
       return 'Noch ' + relativeTimeInMinutesWithoutSuffix;
     } else {
-      return capFirst(relativeTime(newEvent.endTimeInMs, nowTimeInMs));
+      return capitalizeFirstLetter(relativeTime(endTimeInMs, nowTimeInMs));
     }
   }
 
