@@ -56,6 +56,8 @@
       .then((data) => {
         const zero = 0;
         const one = 1;
+        const eight = 8;
+        const eighteen = 18;
         const thousand = 1000;
         const newWeatherForecasts = [];
         let weatherForecastData = {};
@@ -85,7 +87,7 @@
             // Since we don't want an icon from the start of the day (in the middle of the night)
             // we update the icon as long as it's somewhere during the day with the highest occurrence.
             const hour = weatherForecastDate.getHours();
-            if (hour >= 8 && hour <= 18) {
+            if (hour >= eight && hour <= eighteen) {
               const icon = ICON_TABLE[weatherForecast.weather[zero].icon];
               const duplicateIconCount = duplicateIcons[icon] + one || one;
               duplicateIcons[icon] = duplicateIconCount;
@@ -103,6 +105,7 @@
             const icon = ICON_TABLE[weatherForecast.weather[zero].icon];
 
             weatherForecastData = {
+              id: weatherForecast.dt,
               day: day,
               icon: icon,
               maxTemp: parseFloat(weatherForecast.temp.max).toFixed(one),
@@ -121,7 +124,7 @@
 
         const newWeatherForecastsSize = newWeatherForecasts.length;
         for (let index = zero; index < newWeatherForecastsSize; index++) {
-          let newWeatherForecast = newWeatherForecasts[index];
+          const newWeatherForecast = newWeatherForecasts[index];
           let opacity = one;
 
           if (config.fade && config.fadePoint < one) {
@@ -156,7 +159,7 @@
 <header class="normal">{header}</header>
 <table class="small">
   <tbody>
-    {#each weatherForecasts as weatherForecast}
+    {#each weatherForecasts as weatherForecast (weatherForecast.id)}
       <tr class="normal" style:opacity={weatherForecast.opacity}>
         <td class="bright day">{weatherForecast.day}</td>
         <td class="bright weather-icon">
