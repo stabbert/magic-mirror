@@ -75,7 +75,7 @@
     const diffInMinutesAbs = Math.abs(diffInMinutes);
 
     if (diffInMinutesAbs < ONE_HOUR_IN_MINUTES) {
-      return RELATIVE_TIME_FORMAT_ALWAYS.format(diffInMinutes, RELATIVE_TIME_FORMAT_MINUTE_UNIT);
+      return RELATIVE_TIME_FORMAT_ALWAYS.format(Math.round(diffInMinutes), RELATIVE_TIME_FORMAT_MINUTE_UNIT);
     }
 
     if (diffInMinutes < ONE_DAY_IN_MINUTES) {
@@ -131,7 +131,7 @@
       }
     } else if (isAfter(endTimeInMs, nowTimeInMs)) {
       const relativeTimeInMinutes = relativeTime(endTimeInMs, nowTimeInMs);
-      const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substr(relativeTimeInMinutes.indexOf(' ') + 1);
+      const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substring(relativeTimeInMinutes.indexOf(' ') + 1);
       return 'Noch ' + relativeTimeInMinutesWithoutSuffix;
     } else {
       return capitalizeFirstLetter(relativeTime(endTimeInMs, nowTimeInMs));
