@@ -368,11 +368,18 @@
   }
 
   function updateTimeInAllEvents() {
-    const nowTimeInMs = Date.now();
+    const now = new Date();
+    const hours = now.getHours();
+    const nowTimeInMs = now.getTime();
+
     const calendarEventsSize = calendarEvents.length;
     for (let index = 0; index < calendarEventsSize; index++) {
       const calendarEvent = calendarEvents[index];
-      calendarEvents[index].time = calculateTimeTitle(nowTimeInMs, calendarEvent);
+      const isNewDay = hours === 0;
+
+      if (isNewDay || isAfter(nowTimeInMs, calendarEvent.startTimeInMs)) {
+        calendarEvents[index].time = calculateTimeTitle(nowTimeInMs, calendarEvent);
+      }
     }
   }
 
