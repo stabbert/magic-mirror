@@ -131,7 +131,9 @@
       }
     } else if (isAfter(endTimeInMs, nowTimeInMs)) {
       const relativeTimeInMinutes = relativeTime(endTimeInMs, nowTimeInMs);
-      const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substring(relativeTimeInMinutes.indexOf(' ') + 1);
+      const relativeTimeInMinutesWithoutSuffix = relativeTimeInMinutes.substring(
+        relativeTimeInMinutes.indexOf(' ') + 1,
+      );
       return 'Noch ' + relativeTimeInMinutesWithoutSuffix;
     } else {
       return capitalizeFirstLetter(relativeTime(endTimeInMs, nowTimeInMs));
@@ -214,8 +216,8 @@
 
             const allSubcomponentsSize = allSubcomponents.length;
             for (let index = 0; index < allSubcomponentsSize; index++) {
-              let vevent = allSubcomponents[index];
-              let event = new ICAL.Event(vevent);
+              const vevent = allSubcomponents[index];
+              const event = new ICAL.Event(vevent);
 
               if (event.recurrenceId) {
                 shiftedRecurrenceEventMap[event.uid] = event;
@@ -234,21 +236,23 @@
                 endTimeInMs = startTimeInMs;
               }
 
-              let title = 'Termin';
+              let title;
               if (event.summary) {
                 title = typeof event.summary.val !== 'undefined' ? event.summary.val : event.summary;
               } else if (event.description) {
                 title = event.description;
+              } else {
+                title = 'Termin';
               }
 
               // Replaying event
               if (event.isRecurring()) {
-                let timesInMs = [];
-                let rule = event.iterator();
-                let exceptionTimesInMs = rule.exDates.map((exceptionDate) => toTimeInMs(exceptionDate));
-                let shiftedRecurrenceEvent = shiftedRecurrenceEventMap[event.uid];
+                const timesInMs = [];
+                const rule = event.iterator();
+                const exceptionTimesInMs = rule.exDates.map((exceptionDate) => toTimeInMs(exceptionDate));
+                const shiftedRecurrenceEvent = shiftedRecurrenceEventMap[event.uid];
 
-                let shiftedTimeInMs = shiftedRecurrenceEvent ? toTimeInMs(shiftedRecurrenceEvent.recurrenceId) : null;
+                const shiftedTimeInMs = shiftedRecurrenceEvent ? toTimeInMs(shiftedRecurrenceEvent.recurrenceId) : null;
 
                 let nextTimeInMs = fromRuleNextTimeInMs(rule);
                 while (nextTimeInMs) {
@@ -270,9 +274,11 @@
                 }
 
                 // calculate the duration of the event for use with recurring events.
-                let durationTimeInMs = endTimeInMs - startTimeInMs;
+                const durationTimeInMs = endTimeInMs - startTimeInMs;
 
-                for (let timeInMs of timesInMs) {
+                const timesInMsSize = timesInMs.length;
+                for (let index = 0; index < timesInMsSize; index++) {
+                  const timeInMs = timesInMs[index];
                   startTimeInMs = timeInMs;
                   endTimeInMs = startTimeInMs + durationTimeInMs;
 
@@ -356,6 +362,7 @@
           }
         }
 
+        newEvent.id = stringToHash(newEvent.title + newEvent.startTimeInMs + newEvent.endTimeInMs);
         newEvent.title = sanitize(newEvent.title);
         newEvent.time = calculateTimeTitle(nowTimeInMs, newEvent);
         newEvent.symbol =
@@ -365,6 +372,21 @@
 
       calendarEvents = allNewEvents;
     });
+  }
+
+  function stringToHash(string) {
+    let hash = 0;
+    const size = string.length;
+
+    if (size === 0) return hash;
+
+    for (let index = 0; index < size; index++) {
+      const charCode = string.charCodeAt(index);
+      hash = (hash << 5) - hash + charCode;
+      hash = hash & hash;
+    }
+
+    return hash;
   }
 
   function updateTimeInAllEvents() {
@@ -399,7 +421,7 @@
 <header class="normal">{header}</header>
 <table class="small">
   <tbody>
-    {#each calendarEvents as event}
+    {#each calendarEvents as event (event.id)}
       <tr class="normal bright" style:opacity={event.opacity}>
         <td class="symbol">
           <i class={event.symbol}></i>
