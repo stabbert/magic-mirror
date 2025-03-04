@@ -408,7 +408,8 @@
   onMount(() => {
     updateCalendar();
 
-    const updateCalendarIntervalId = setInterval(updateCalendar, config.updateIntervall);
+    const updateIntervalInMs = config.updateIntervalInMinutes * 60 * 1000;
+    const updateCalendarIntervalId = setInterval(updateCalendar, updateIntervalInMs);
     const updateTimeInAllEventsIntervalId = setInterval(updateTimeInAllEvents, ONE_MINUTE_IN_MS);
 
     return () => {

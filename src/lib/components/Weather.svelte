@@ -86,7 +86,8 @@
   onMount(() => {
     updateWeather();
 
-    const intervalId = setInterval(updateWeather, config.updateIntervall);
+    const updateIntervalInMs = config.updateIntervalInMinutes * 60 * 1000;
+    const intervalId = setInterval(updateWeather, updateIntervalInMs);
 
     return () => clearInterval(intervalId);
   });

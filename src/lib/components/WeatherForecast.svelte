@@ -150,7 +150,8 @@
   onMount(() => {
     updateWeatherForecast();
 
-    const intervalId = setInterval(updateWeatherForecast, config.updateIntervall);
+    const updateIntervalInMs = config.updateIntervalInMinutes * 60 * 1000;
+    const intervalId = setInterval(updateWeatherForecast, updateIntervalInMs);
 
     return () => clearInterval(intervalId);
   });
