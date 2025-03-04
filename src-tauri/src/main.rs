@@ -1,17 +1,19 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
+use magic_mirror::{commands, config};
 use tauri::Manager;
-
-mod config;
 
 fn main() {
     tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![commands::fetch_calendar_events])
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
         .setup(|app| {
-            config::create_default_config(app.path());
+            // create the default config json file, if the not exist
+            config::create_default_config_file(app.path());
 
+            // add the config to the state
+            app.manage(config::to_config(app.path()));
+
+            // disable the visibility of the cursor in the application
             if let Some(window) = app.get_webview_window("main") {
                 window.set_cursor_visible(false).unwrap();
             }

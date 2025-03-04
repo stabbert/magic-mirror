@@ -3,9 +3,11 @@
   import '../../../node_modules/@fortawesome/fontawesome-free/css/regular.min.css';
   import '../../../node_modules/@fortawesome/fontawesome-free/css/solid.min.css';
   import ICAL from 'ical.js';
-  import { onMount } from 'svelte';
   import { store } from '../store';
   import { fetch } from '@tauri-apps/plugin-http';
+  import { invoke } from '@tauri-apps/api/core';
+
+  invoke('fetch_calendar_events');
 
   const config = $store.config.calendar;
   const language = $store.config.language;
@@ -390,18 +392,18 @@
     }
   }
 
-  onMount(() => {
-    updateCalendar();
+  // onMount(() => {
+  //   updateCalendar();
 
-    const updateIntervalInMs = config.updateIntervalInMinutes * 60 * 1000;
-    const updateCalendarIntervalId = setInterval(updateCalendar, updateIntervalInMs);
-    const updateTimeInAllEventsIntervalId = setInterval(updateTimeInAllEvents, ONE_MINUTE_IN_MS);
+  //   const updateIntervalInMs = config.updateIntervalInMinutes * 60 * 1000;
+  //   const updateCalendarIntervalId = setInterval(updateCalendar, updateIntervalInMs);
+  //   const updateTimeInAllEventsIntervalId = setInterval(updateTimeInAllEvents, ONE_MINUTE_IN_MS);
 
-    return () => {
-      clearInterval(updateCalendarIntervalId);
-      clearInterval(updateTimeInAllEventsIntervalId);
-    };
-  });
+  //   return () => {
+  //     clearInterval(updateCalendarIntervalId);
+  //     clearInterval(updateTimeInAllEventsIntervalId);
+  //   };
+  // });
 </script>
 
 <header class="normal">{header}</header>
@@ -427,7 +429,6 @@
 
   .title {
     display: -webkit-box;
-    line-clamp: 2;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     overflow: hidden;

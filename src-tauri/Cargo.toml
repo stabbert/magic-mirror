@@ -1,11 +1,11 @@
 [package]
-name = "magic-mirror-app"
+name = "magic-mirror"
 version = "2.0.0"
 description = "A Tauri App for a Magic Mirror"
 authors = ["stabbert"]
-license = "MIT"
+license = "BSD-3"
 repository = "https://github.com/stabbert/magic-mirror"
-default-run = "magic-mirror-app"
+default-run = "magic-mirror"
 edition = "2024"
 rust-version = "1.88.0"
 
@@ -15,6 +15,9 @@ rust-version = "1.88.0"
 tauri-build = { version = "2.3.0", features = [] }
 
 [dependencies]
+icalendar = "0.16.15"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
 tauri = { version = "2.6.2", default-features = false, features = ["compression", "wry"] }
 tauri-plugin-http = "2.5.0"
 tauri-plugin-fs = "2.4.0"
@@ -24,7 +27,8 @@ incremental = true # Compile your binary in smaller steps.
 
 [profile.release]
 codegen-units = 1 # Allows LLVM to perform better optimization.
+incremental = false
 lto = true # Enables link-time-optimizations.
 opt-level = 3 # Prioritizes small binary size. Use `3` if you prefer speed.
-panic = "abort" # Higher performance by disabling panic handlers.car
+panic = "abort" # Higher performance by disabling panic handlers.
 strip = true # Ensures debug symbols are removed.
