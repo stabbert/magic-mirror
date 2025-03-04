@@ -13,6 +13,9 @@ appConfigDir()
   .then((data) => JSON.parse(data))
   .then((config) => {
     config.loaded = true;
+    config.common = {
+      language: 'de'
+    }
     store.set({ config: config });
   })
   .catch((error) => window.console.error(error));

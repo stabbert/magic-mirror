@@ -1,7 +1,4 @@
 {
-  "common": {
-    "language": "de"
-  },
   "calendar": {
     "header": "Termine",
     "fade": true,
