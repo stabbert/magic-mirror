@@ -9,7 +9,7 @@
   const config = $store.config.weather;
   const language = $store.config.common.language;
 
-  const weather = $state({
+  let weather = $state({
     sunriseSunsetIcon: '',
     sunriseSunsetTime: '',
     temperature: '',
@@ -73,12 +73,14 @@
         const sunriseSunsetDate = isSunset ? sunset : sunrise;
         const sunriseSunsetTime = TIME_FORMAT.format(sunriseSunsetDate);
 
-        weather.sunriseSunsetIcon = isSunset ? SUNSET_ICON : SUNRISE_ICON;
-        weather.sunriseSunsetTime = sunriseSunsetTime;
-        weather.temperature = parseFloat(data.main.temp).toFixed(one);
-        weather.weatherType = ICON_TABLE[data.weather[zero].icon];
-        weather.windDeg = data.wind.deg;
-        weather.windSpeed = parseFloat(data.wind.speed).toFixed(zero);
+        weather = {
+          sunriseSunsetIcon: isSunset ? SUNSET_ICON : SUNRISE_ICON,
+          sunriseSunsetTime: sunriseSunsetTime,
+          temperature: parseFloat(data.main.temp).toFixed(one),
+          weatherType: ICON_TABLE[data.weather[zero].icon],
+          windDeg: data.wind.deg,
+          windSpeed: parseFloat(data.wind.speed).toFixed(zero),
+        };
       })
       .catch((error) => window.console.error(error));
   }
