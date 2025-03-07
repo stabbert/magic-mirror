@@ -47,21 +47,6 @@
   const ONE_DAY_IN_MINUTES = 1440;
   const ONE_MONTH_IN_MINUTES = 43200;
 
-  const sanitizeUnsafeXssCharacterReplacements = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#x27;',
-    '/': '&#x2F;',
-  };
-
-  const sanitizeUnsafeXssCharactersRegExp = /[&<>"'/]/gi;
-
-  function sanitize(string) {
-    return string.replace(sanitizeUnsafeXssCharactersRegExp, (match) => sanitizeUnsafeXssCharacterReplacements[match]);
-  }
-
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -362,7 +347,7 @@
         }
 
         newEvent.id = stringToHash(newEvent.title + newEvent.startTimeInMs + newEvent.endTimeInMs);
-        newEvent.title = sanitize(newEvent.title);
+        newEvent.title = newEvent.title;
         newEvent.time = calculateTimeTitle(nowTimeInMs, newEvent);
         newEvent.symbol =
           newEvent.title.indexOf('Geburtstag') === -1 ? 'fa-regular fa-calendar-check' : 'fa-solid fa-birthday-cake';
@@ -426,7 +411,7 @@
         <td class="symbol">
           <i class={event.symbol}></i>
         </td>
-        <td class="title">{@html event.title}</td>
+        <td class="title">{event.title}</td>
         <td class="time light">{event.time}</td>
       </tr>
     {/each}
