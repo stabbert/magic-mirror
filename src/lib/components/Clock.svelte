@@ -2,11 +2,10 @@
   import { onMount } from 'svelte';
   import { store } from '../store';
 
-  const clock = $state({
-    date: '',
-    time: '',
-    seconds: '',
-  });
+  let date = $state('');
+  let hours = $state('');
+  let minutes = $state('');
+  let seconds = $state('');
 
   const language = $store.config.common.language;
 
@@ -22,13 +21,8 @@
     day: 'numeric',
   });
 
-  const TIME_FORMAT = new Intl.DateTimeFormat(language, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
   function timeNumber(number) {
-    return number < TEN ? ZERO_STRING + number : number;
+    return number < TEN ? ZERO_STRING + number.toString() : number.toString();
   }
 
   let lastHour = -1;
@@ -40,16 +34,17 @@
       const currentHour = now.getHours();
 
       if (lastHour !== currentHour) {
-        clock.date = DATE_FORMAT.format(now);
+        date = DATE_FORMAT.format(now);
         lastHour = currentHour;
       }
 
-      clock.time = TIME_FORMAT.format(now);
+      hours = timeNumber(currentHour);
+      minutes = timeNumber(now.getMinutes());
       secondCounter = now.getSeconds();
     } else {
       secondCounter = secondCounter + ONE;
     }
-    clock.seconds = timeNumber(secondCounter);
+    seconds = timeNumber(secondCounter);
   }
 
   onMount(() => {
@@ -61,8 +56,5 @@
   });
 </script>
 
-<div class="normal medium">{clock.date}</div>
-<div class="bright large light">
-  {clock.time}
-  <sup class="dimmed">{clock.seconds}</sup>
-</div>
+<div class="normal medium">{date}</div>
+<div class="bright large light"><span>{hours}</span>:<span>{minutes}</span><sup class="dimmed">{seconds}</sup></div>
