@@ -10,8 +10,8 @@
       {
         "url": null,
         "auth": {
-            "user": "username",
-            "pass": "superstrongpassword"
+          "user": "username",
+          "pass": "superstrongpassword"
         }
       }
     ]

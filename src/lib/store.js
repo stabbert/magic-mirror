@@ -12,10 +12,13 @@ appConfigDir()
   .then((appConfigDir) => readTextFile(appConfigDir + '/config.json'))
   .then((data) => JSON.parse(data))
   .then((config) => {
-    config.loaded = true;
-    config.common = {
-      language: 'de'
-    }
-    store.set({ config: config });
+    store.set({
+      config: Object.assign(config, {
+        common: {
+          language: 'de',
+        },
+        loaded: true,
+      }),
+    });
   })
   .catch((error) => window.console.error(error));

@@ -39,7 +39,7 @@
       const now = new Date();
       const currentHour = now.getHours();
 
-      if (lastHour != currentHour) {
+      if (lastHour !== currentHour) {
         clock.date = DATE_FORMAT.format(now);
         lastHour = currentHour;
       }

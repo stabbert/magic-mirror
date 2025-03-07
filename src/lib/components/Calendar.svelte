@@ -67,7 +67,7 @@
   }
 
   function isFullDayEvent(event) {
-    return event.duration.days > 0 ? true : false;
+    return event.duration.days > 0;
   }
 
   function relativeTime(startTimeInMs, nowTimeInMs) {
@@ -180,7 +180,7 @@
   function updateCalendar() {
     const nowTimeInMs = Date.now();
     const todayTimeInMs = startOfDayAsTimeInMs(nowTimeInMs);
-    const futureTimeInMs = addDaysAsTimeInMs(nowTimeInMs, config.maximumNumberOfDays) - 1000; // Subtract 1 second so that events that start on the middle of the night will not repeat.
+    const futureTimeInMs = addDaysAsTimeInMs(nowTimeInMs, config.maximumNumberOfDays) - 1000; // Subtract 1 second so that events that start in the middle of the night will not repeat.
 
     const calendarFetches = [];
 
@@ -278,8 +278,7 @@
 
                 const timesInMsSize = timesInMs.length;
                 for (let index = 0; index < timesInMsSize; index++) {
-                  const timeInMs = timesInMs[index];
-                  startTimeInMs = timeInMs;
+                  startTimeInMs = timesInMs[index];
                   endTimeInMs = startTimeInMs + durationTimeInMs;
 
                   if (isAfter(endTimeInMs, nowTimeInMs)) {
@@ -442,6 +441,7 @@
 
   .title {
     display: -webkit-box;
+    line-clamp: 2;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
     overflow: hidden;
