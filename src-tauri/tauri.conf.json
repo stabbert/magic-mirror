@@ -18,32 +18,17 @@
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:5173"
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
   },
   "bundle": {
     "active": true,
-    "targets": ["deb"],
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
-    "longDescription": "",
-    "macOS": {
-      "entitlements": null,
-      "exceptionDomain": "",
-      "frameworks": [],
-      "providerShortName": null,
-      "signingIdentity": null
-    },
     "resources": ["resources/config.json"],
-    "shortDescription": "",
-    "linux": {
-      "deb": {
-        "depends": []
-      }
-    }
+    "targets": ["deb"]
   },
   "identifier": "com.tauri.magicmirror",
   "mainBinaryName": "magic-mirror",
-  "plugins": {},
   "productName": "magic-mirror",
   "version": "2.0.0"
 }
