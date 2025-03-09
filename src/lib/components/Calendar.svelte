@@ -92,10 +92,11 @@
     const endTimeInMs = newEvent.endTimeInMs;
 
     if (newEvent.fullDayEvent) {
-      const diffInMs = startTimeInMs - nowTimeInMs;
-
-      if (diffInMs < TWO_DAY_IN_MS) {
-        const days = Math.round(diffInMs / ONE_DAY_IN_MS);
+      const startTimeInMsOnlyDate = startOfDayAsTimeInMs(startTimeInMs);
+      const nowTimeInMsOnlyDate = startOfDayAsTimeInMs(nowTimeInMs);
+      const diffInMs = startTimeInMsOnlyDate - nowTimeInMsOnlyDate;
+      if (diffInMs <= TWO_DAY_IN_MS) {
+        const days = diffInMs / ONE_DAY_IN_MS;
         return capitalizeFirstLetter(RELATIVE_TIME_FORMAT_AUTO.format(days, RELATIVE_TIME_FORMAT_DAY_UNIT));
       }
     }
