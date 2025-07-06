@@ -52,10 +52,11 @@ jobs:
           RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.85.0 -y --target arm-unknown-linux-gnueabihf
 
           # Set envs
-          ENV CARGO_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
+          ENV CARGO_INCREMENTAL=0 \
+            CARGO_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
+            PATH="/root/.cargo/bin:$PATH" \
             PKG_CONFIG_PATH="/usr/lib/arm-linux-gnueabihf/pkgconfig/:${PKG_CONFIG_PATH}" \
-            PKG_CONFIG_SYSROOT_DIR=/usr/arm-linux-gnueabihf/ \
-            PATH="/root/.cargo/bin:$PATH"
+            PKG_CONFIG_SYSROOT_DIR=/usr/arm-linux-gnueabihf/
 
           WORKDIR /app
           EOF
