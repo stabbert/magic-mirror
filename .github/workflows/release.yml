@@ -30,19 +30,7 @@ jobs:
 
           RUN apt-get update && \
               apt-get install --assume-yes --no-install-recommends \
-                build-essential \
-                ca-certificates \
-                curl \
-                file \
-                g++-arm-linux-gnueabihf \
-                gcc-arm-linux-gnueabihf \
-                pkg-config \
-                wget
-
-          RUN dpkg --add-architecture armhf && \
-              apt-get update && apt-get install --assume-yes --no-install-recommends \
-                libssl-dev:armhf \
-                libwebkit2gtk-4.1-dev:armhf
+                libwebkit2gtk-4.1
 
           # Install NodeJS
           RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &&\
