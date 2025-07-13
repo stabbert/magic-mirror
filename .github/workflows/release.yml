@@ -41,6 +41,7 @@ jobs:
 
           # Set envs
           ENV CARGO_INCREMENTAL=0 \
+            CARGO_PROFILE_TEST_DEBUG=0 \
             CARGO_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
             PATH="/root/.cargo/bin:$PATH" \
             PKG_CONFIG_PATH="/usr/lib/arm-linux-gnueabihf/pkgconfig/:${PKG_CONFIG_PATH}" \
