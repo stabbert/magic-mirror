@@ -14,7 +14,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -25,7 +27,7 @@ jobs:
       - name: Build deb bundle with docker and cross compiling for ARMv6 raspberry pi zero
         run: |
           cat <<EOF > Dockerfile       
-          FROM balenalib/rpi-raspbian:bookworm-20230705
+          FROM balenalib/rpi-debian:bookworm-20250521
           ARG DEBIAN_FRONTEND=noninteractive
 
           RUN apt-get update && \
@@ -37,7 +39,7 @@ jobs:
             apt-get install --assume-yes --no-install-recommends nodejs
 
           # Install Rust
-          RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.88.0 -y --target arm-unknown-linux-gnueabihf
+          RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.95.0 -y --target arm-unknown-linux-gnueabihf
 
           # Set envs
           ENV CARGO_INCREMENTAL=0 \
@@ -54,13 +56,13 @@ jobs:
 
           docker run --rm -i -v $PWD:/app \
             debian/tauri-cross:arm-unknown-linux-gnueabihf bash \
-            -c "npm ci && npm run tauri build -- --config src-tauri/tauri.prod.conf.json --target arm-unknown-linux-gnueabihf"
+            -c "npm ci && npm run tauri build -- --config src-tauri/tauri.prod.conf.json --target arm-unknown-linux-gnueabihf --verbose"
 
       - name: Get app version
         run: echo "APP_VERSION=$(jq -r .version src-tauri/tauri.conf.json)" >> $GITHUB_ENV
 
       - name: Upload deb bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Debian ARMv6 Raspberry Pi Zero Bundle
           path: ./src-tauri/target/arm-unknown-linux-gnueabihf/release/bundle/deb/magic-mirror_${{ env.APP_VERSION }}_armhf.deb

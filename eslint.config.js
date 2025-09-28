@@ -1,23 +1,32 @@
-import globals from 'globals';
+import prettier from 'eslint-config-prettier';
+import path from 'node:path';
+import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
-import eslintPluginSvelte from 'eslint-plugin-svelte';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import svelte from 'eslint-plugin-svelte';
+import { defineConfig } from 'eslint/config';
+import globals from 'globals';
+import svelteConfig from './svelte.config.js';
 
-export default [
+const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
+
+export default defineConfig([
+  includeIgnoreFile(gitignorePath),
   js.configs.recommended,
-  ...eslintPluginSvelte.configs['flat/recommended'],
-  eslintPluginPrettierRecommended,
+  svelte.configs.recommended,
+  prettier,
+  svelte.configs.prettier,
   {
-    files: ['**/*.js', '**/*.svelte'],
-    languageOptions: {
-      ecmaVersion: 2021,
-      globals: {
-        ...globals.browser,
-      },
-      sourceType: 'module',
-    },
-    rules: {
-      'svelte/no-at-html-tags': 'off',
-    },
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
-];
+
+  {
+    files: ['**/*.svelte', '**/*.svelte.js'],
+    languageOptions: { parserOptions: { svelteConfig } },
+  },
+
+  {
+    // Override or add rule settings here, such as:
+    // 'svelte/button-has-type': 'error'
+    rules: {},
+  },
+]);

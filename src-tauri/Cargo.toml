@@ -3,21 +3,21 @@ name = "magic-mirror-app"
 version = "2.0.0"
 description = "A Tauri App for a Magic Mirror"
 authors = ["stabbert"]
-license = "MIT"
+license = "BSD-3"
 repository = "https://github.com/stabbert/magic-mirror"
 default-run = "magic-mirror-app"
 edition = "2024"
-rust-version = "1.88.0"
+rust-version = "1.95.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.3.0", features = [] }
+tauri-build = { version = "2.5.6", features = [] }
 
 [dependencies]
-tauri = { version = "2.6.2", default-features = false, features = ["compression", "wry"] }
-tauri-plugin-http = "2.5.0"
-tauri-plugin-fs = "2.4.0"
+tauri = { version = "2.10.3", default-features = false, features = ["compression", "wry"] }
+tauri-plugin-http = "2.5.7"
+tauri-plugin-fs = "2.5.0"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.

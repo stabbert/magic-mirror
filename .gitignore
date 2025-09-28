@@ -21,6 +21,9 @@ yarn-error.log*
 *.sln
 *.sw*
 
+# GitHub Workflows
+/.github/workflows/release_backup*.yml
+
 # Tauri
 /src-tauri/gen/**
 

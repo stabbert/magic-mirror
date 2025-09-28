@@ -1,11 +1,11 @@
 <script>
-  import '../../../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css';
-  import '../../../node_modules/@fortawesome/fontawesome-free/css/regular.min.css';
-  import '../../../node_modules/@fortawesome/fontawesome-free/css/solid.min.css';
-  import ICAL from 'ical.js';
-  import { onMount } from 'svelte';
-  import { store } from '../store';
-  import { fetch } from '@tauri-apps/plugin-http';
+  import "../../../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css";
+  import "../../../node_modules/@fortawesome/fontawesome-free/css/regular.min.css";
+  import "../../../node_modules/@fortawesome/fontawesome-free/css/solid.min.css";
+  import ICAL from "ical.js";
+  import { onMount } from "svelte";
+  import { store } from "../store";
+  import { fetch } from "@tauri-apps/plugin-http";
 
   const config = $store.config.calendar;
   const language = $store.config.language;
@@ -143,12 +143,14 @@
   }
 
   function startOfDayAsTimeInMs(timeInMs) {
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity
     const date = new Date(timeInMs);
     date.setHours(0, 0, 0, 0);
     return date.getTime();
   }
 
   function addDaysAsTimeInMs(timeInMs, days) {
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity
     const date = new Date(timeInMs);
     date.setDate(date.getDate() + days);
     return date.getTime();
@@ -320,8 +322,6 @@
           allNewEvents.push(calendarNewEvent);
         }
       }
-
-      allCalendarNewEvents = null;
 
       allNewEvents.sort(function (a, b) {
         return a.startTimeInMs - b.startTimeInMs;
