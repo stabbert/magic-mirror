@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-        with:
-          persist-credentials: false
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -24,45 +22,55 @@ jobs:
           cache-on-failure: true
           workspaces: './src-tauri -> target'
 
-      - name: Build deb bundle with docker and cross compiling for ARMv6 raspberry pi zero
+      - name: Build deb bundle with docker and cross compiling for ARMv8 raspberry pi zero 2
         run: |
           cat <<EOF > Dockerfile       
-          FROM balenalib/rpi-debian:bookworm-20250521
+          FROM debian:trixie-20260406-slim
           ARG DEBIAN_FRONTEND=noninteractive
 
           RUN apt-get update && \
               apt-get install --assume-yes --no-install-recommends \
-                libwebkit2gtk-4.1
+                build-essential \
+                ca-certificates \
+                curl \
+                gcc-aarch64-linux-gnu \
+                pkg-config
+
+          RUN dpkg --add-architecture arm64 && \
+              apt-get update && apt-get install --assume-yes --no-install-recommends \
+                libssl-dev:arm64 \
+                libwebkit2gtk-4.1-dev:arm64
 
           # Install NodeJS
-          RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &&\
+          RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - &&\
             apt-get install --assume-yes --no-install-recommends nodejs
 
           # Install Rust
-          RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.95.0 -y --target arm-unknown-linux-gnueabihf
+          RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.95.0 -y --target aarch64-unknown-linux-gnu
 
-          # Set envs
+          # Set environment variables
           ENV CARGO_INCREMENTAL=0 \
             CARGO_PROFILE_TEST_DEBUG=0 \
-            CARGO_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
+            CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
             PATH="/root/.cargo/bin:$PATH" \
-            PKG_CONFIG_PATH="/usr/lib/arm-linux-gnueabihf/pkgconfig/:${PKG_CONFIG_PATH}" \
-            PKG_CONFIG_SYSROOT_DIR=/usr/arm-linux-gnueabihf/
+            PKG_CONFIG_PATH="/usr/lib/aarch64-linux-gnu/pkgconfig/:${PKG_CONFIG_PATH}" \
+            PKG_CONFIG_SYSROOT_DIR=/usr/aarch64-linux-gnu \
+            RUSTFLAGS="-C target-cpu=cortex-a53"
 
           WORKDIR /app
           EOF
 
-          docker build --tag debian/tauri-cross:arm-unknown-linux-gnueabihf .
+          docker build --tag debian/tauri-cross:aarch64-linux-gnu .
 
           docker run --rm -i -v $PWD:/app \
-            debian/tauri-cross:arm-unknown-linux-gnueabihf bash \
-            -c "npm ci && npm run tauri build -- --config src-tauri/tauri.prod.conf.json --target arm-unknown-linux-gnueabihf --verbose"
+            debian/tauri-cross:aarch64-linux-gnu bash \
+            -c "npm ci && npm run tauri build -- --config src-tauri/tauri.prod.conf.json --target aarch64-unknown-linux-gnu"
 
       - name: Get app version
         run: echo "APP_VERSION=$(jq -r .version src-tauri/tauri.conf.json)" >> $GITHUB_ENV
 
       - name: Upload deb bundle
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: Debian ARMv6 Raspberry Pi Zero Bundle
-          path: ./src-tauri/target/arm-unknown-linux-gnueabihf/release/bundle/deb/magic-mirror_${{ env.APP_VERSION }}_armhf.deb
+          name: Debian ARMv8 Raspberry Pi Zero 2 Bundle
+          path: ./src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/magic-mirror_${{ env.APP_VERSION }}_arm64.deb
