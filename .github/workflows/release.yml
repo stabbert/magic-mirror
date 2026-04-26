@@ -3,13 +3,17 @@ name: Release
 on:
   push:
     branches:
+      - alpha
       - main
-      - completely_rework
     paths-ignore:
       - 'README.md'
       - '.gitignore'
       - '.prettierrc.js'
       - 'eslint.config.js'
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -27,9 +31,9 @@ jobs:
           cache-on-failure: true
           workspaces: './src-tauri -> target'
 
-      - name: Build deb bundle with docker and cross compiling for ARMv8 raspberry pi zero 2
+      - name: Build cross compiling Docker Image for ARMv8 Raspberry Pi Zero 2
         run: |
-          cat <<EOF > Dockerfile       
+          cat > Dockerfile << \EOF      
           FROM debian:trixie-20260406-slim
           ARG DEBIAN_FRONTEND=noninteractive
 
@@ -64,18 +68,51 @@ jobs:
 
           WORKDIR /app
           EOF
-
+          
           docker build --tag debian/tauri-cross:aarch64-linux-gnu .
 
-          docker run --rm -i -v $PWD:/app \
-            debian/tauri-cross:aarch64-linux-gnu bash \
-            -c "npm ci && npm run tauri build -- --config src-tauri/tauri.prod.conf.json --target aarch64-unknown-linux-gnu"
+      - name: Configure semantic release
+        run: |
+          cat > .releaserc.json << \EOF
+          {
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              ["@semantic-release/exec", {
+                "prepareCmd": "sed -i 's/\"version\": \"[^\"]*\"/\"version\": \"${nextRelease.version}\"/' src-tauri/tauri.conf.json",
+                "publishCmd": "docker run --rm -i -v $PWD:/app debian/tauri-cross:aarch64-linux-gnu bash -c 'npm ci && npm run tauri build -- --config src-tauri/tauri.prod.conf.json --target aarch64-unknown-linux-gnu'"
+              }],
+              ["@semantic-release/git", {
+                "assets": ["src-tauri/tauri.conf.json"]
+              }],
+              ["@semantic-release/github", {
+                "assets": [
+                  {"path": "src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/*.deb"}
+                ],
+                "failComment": false,
+                "labels": false,
+                "releaseLabels": false,
+                "successCommentCondition": false
+              }]
+            ]
+          }
+          EOF
 
-      - name: Get app version
-        run: echo "APP_VERSION=$(jq -r .version src-tauri/tauri.conf.json)" >> $GITHUB_ENV
-
-      - name: Upload deb bundle
-        uses: actions/upload-artifact@v7
+      - name: Create semantic version
+        uses: cycjimmy/semantic-release-action@v6.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Debian ARMv8 Raspberry Pi Zero 2 Bundle
-          path: ./src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/magic-mirror_${{ env.APP_VERSION }}_arm64.deb
+          branch: | # Documentation for branch configuration https://semantic-release.gitbook.io/semantic-release/usage/configuration#branches
+            [
+              '+([0-9])?(.{+([0-9]),x}).x', 
+              'main', 
+              { "name": "alpha", "prerelease": true }
+            ]
+          extra_plugins: |
+            @semantic-release/commit-analyzer@v13.0.1
+            @semantic-release/exec@v7.0.3
+            @semantic-release/git@v10.0.1
+            @semantic-release/github@v11.0.1
+            @semantic-release/release-notes-generator@v14.0.3
+          semantic_version: v25.0.3

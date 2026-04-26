@@ -1,6 +1,5 @@
 [package]
 name = "magic-mirror-app"
-version = "2.0.0"
 description = "A Tauri App for a Magic Mirror"
 authors = ["stabbert"]
 license = "BSD-3"
