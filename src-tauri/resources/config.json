@@ -1,21 +1,17 @@
 {
-  "common": {
-    "language": "de"
-  },
   "calendar": {
     "header": "Termine",
     "fade": true,
     "fadePoint": 0.25,
     "maximumEntries": 15,
     "maximumNumberOfDays": 365,
-    "maxTitleLength": 70,
-    "updateIntervall": 3600000,
+    "updateIntervalInMinutes": 60,
     "calendars": [
       {
         "url": null,
         "auth": {
-            "user": "username",
-            "pass": "superstrongpassword"
+          "user": "username",
+          "pass": "superstrongpassword"
         }
       }
     ]
@@ -24,7 +20,7 @@
     "appid": "YOUR_OPENWEATHER_API_KEY",
     "location": "YOUR_LOCATION",
     "locationID": "YOUR_LOCATION_ID",
-    "updateIntervall": 600000
+    "updateIntervalInMinutes": 10
   },
   "weatherForecast": {
     "header": "Wettervorhersage",
@@ -34,6 +30,6 @@
     "location": "YOUR_LOCATION",
     "locationID": "YOUR_LOCATION_ID",
     "maxNumberOfDays": 7,
-    "updateIntervall": 7200000
+    "updateIntervalInMinutes": 120
   }
 }

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "app": {
+    "windows": [
+      {
+        "dragDropEnabled": false,
+        "height": 1920,
+        "resizable": true,
+        "title": "Magic Mirror",
+        "width": 1080,
+        "useHttpsScheme": true
+      }
+    ],
+    "security": {
+      "csp": null,
+      "capabilities": ["default"]
+    }
+  },
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist",
+    "removeUnusedCommands": true
+  },
+  "bundle": {
+    "active": true,
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "resources": ["resources/config.json"],
+    "targets": ["deb"]
+  },
+  "identifier": "com.tauri.magicmirror",
+  "mainBinaryName": "magic-mirror",
+  "productName": "magic-mirror",
+  "version": "1.0.0"
+}
