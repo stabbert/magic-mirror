@@ -5,6 +5,11 @@ on:
     branches:
       - main
       - completely_rework
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - '.prettierrc.js'
+      - 'eslint.config.js'
 
 jobs:
   release:
