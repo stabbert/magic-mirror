@@ -111,8 +111,8 @@ jobs:
             ]
           extra_plugins: |
             @semantic-release/commit-analyzer@v13.0.1
-            @semantic-release/exec@v7.0.3
+            @semantic-release/exec@v7.1.0
             @semantic-release/git@v10.0.1
-            @semantic-release/github@v11.0.1
-            @semantic-release/release-notes-generator@v14.0.3
+            @semantic-release/github@v12.0.6
+            @semantic-release/release-notes-generator@v14.1.0
           semantic_version: v25.0.3
