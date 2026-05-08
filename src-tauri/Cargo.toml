@@ -14,7 +14,7 @@ rust-version = "1.95.0"
 tauri-build = { version = "2.5.6", features = [] }
 
 [dependencies]
-tauri = { version = "2.10.3", default-features = false, features = ["compression", "wry"] }
+tauri = { version = "2.11.1", default-features = false, features = ["compression", "wry"] }
 tauri-plugin-http = "2.5.7"
 tauri-plugin-fs = "2.5.0"
 
